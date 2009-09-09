@@ -1,0 +1,492 @@
+<?xml version="1.0"?>
+<!--
+
+This is the anc build file for abc.
+The most important tasks are:
+
+- default:
+  Build jars for abc, the abc runtime library
+  and the test drivers.
+- jars:           
+  Build the above plus abc-complete.jar, which holds
+  abc plus all its dependencies.
+- clean:
+  Deletes all compiled class files.
+- veryclean:
+  Deletes all the above plus all generated files.
+- run:
+  Builds abc-complete.jar and then runs it
+  with your extension enabled and the
+  command line arguments specified by
+  ext.arguments in ant.settings.
+
+-->
+
+<project default="default" name="abc">
+
+	<target name="default" depends="clara-jar,runtime-jar" />
+
+	<target name="settings">
+		<property file="ant.settings" />
+		<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it." unless="polyglot.loc" />
+		
+		  <fail message="Please fix ant.settings" unless="abc-ja.loc"/>
+		  
+		  <property file="${abc-ja.loc}/ant.settings"/>
+		  <fail message="Please fix ${abc-ja.loc}/ant.settings" unless="abc.loc"/>
+		  
+		  <property file="${abc.loc}/ant.settings"/>
+		  <fail message="Please copy ant.settings.template to ant.settings, and set the variables in it."
+		        unless="polyglot.loc"/>
+
+		  <!-- "tools" is the directory where generators and libraries are located. -->
+		  <property name="tools" value="${frontend}/tools"/>
+		  
+		  <!-- "jflex" is an ant task class for the scanner generator in JFlex.jar -->
+		  <taskdef name="jflex" classname="JFlex.anttask.JFlexTask"
+		           classpath="${tools}/JFlex.jar"/>
+		  <!-- "beaver" is an ant task class for the parser generator in beaver.jar -->
+		  <taskdef name="beaver" classname="beaver.comp.run.AntTask"
+		           classpath="${abc-ja.loc}/tools/beaver.jar"/>
+		  <!-- "jastadd" is an ant task class in jastadd2.jar -->
+		  <taskdef name="jastadd" classname="jastadd.JastAddTask"
+		           classpath="${tools}/jastadd2.jar"/>
+	</target>
+
+	
+	<target name="jars" depends="clara-jar,complete-jar" />
+
+	<target name="copy-jars" depends="settings,libdir">
+		<copy file="${polyglot.loc}" tofile="lib/polyglot.jar" />
+		<copy file="${polyglot.cupclasses.loc}" tofile="lib/java_cup.jar" />
+		<copy file="${soot.loc}" tofile="lib/sootclasses.jar" />
+		<copy file="${jasmin.loc}" tofile="lib/jasminclasses.jar" />
+	</target>
+
+	<target name="abc-for-ajc-ant-jar" depends="settings,libdir">
+<!--		<jar destfile="lib/abc-for-ajc-ant.jar">
+			<fileset dir="dist/abc-for-ajc-ant" />
+		</jar>-->
+	</target>
+
+	<target name="libdir">
+		<mkdir dir="lib" />
+	</target>
+
+	<target name="clara-jar" depends="settings,abc,libdir">
+		<jar destfile="lib/clara.jar" manifest="MANIFEST.MF">
+			<fileset dir="classes" />
+			<zipfileset src="${abc-ja.loc}/lib/abc-ja.jar"/>
+			<zipfileset src="${abc-ja-ext.loc}/lib/abc-ja-exts.jar"/>
+		</jar>
+	</target>
+
+	<target name="runtime-jar" depends="settings,runtime,libdir">
+		<jar destfile="lib/abc-runtime.jar">
+			<fileset dir="runtime-classes" />
+		</jar>
+	</target>
+
+	<target name="paddle-jar" depends="settings,paddle,libdir">
+		<jar destfile="lib/abc-paddle.jar">
+			<fileset dir="paddle-classes" />
+		</jar>
+	</target>
+
+	<target name="paddle" depends="settings,abc">
+		<mkdir dir="paddle-classes" />
+		<javac destdir="paddle-classes" debug="true">
+			<src path="paddle-src" />
+			<classpath>
+				<pathelement location="${soot.loc}" />
+				<pathelement location="${paddle.loc}" />
+				<pathelement location="classes" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="runtime" depends="settings">
+		<mkdir dir="runtime-src" />
+		<mkdir dir="runtime-classes" />
+		<javac destdir="runtime-classes" debug="true" source="${java.source}">
+			<src path="runtime-src" />
+			<src path="${abc.dir}/runtime-src" />
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="complete-jar" depends="clara-jar,libdir,runtime">
+		<jar destfile="lib/clara-complete.jar" manifest="MANIFEST.MF">
+			<fileset dir="classes" />
+			<fileset dir="${abc.dir}/classes" />
+			<zipfileset src="${abc-ja.loc}/lib/abc-ja.jar"/>
+			<zipfileset src="${abc-ja-ext.loc}/lib/abc-ja-exts.jar"/>
+			<fileset dir="runtime-classes" />
+			<zipfileset src="${polyglot.loc}" />
+			<zipfileset src="${polyglot.cupclasses.loc}" />
+			<zipfileset src="${soot.loc}" />
+			<zipfileset src="${jasmin.loc}" />
+		</jar>
+	</target>
+	
+	<target name="abc" depends="settings,da-parser,da-jrag,runtime">
+		<mkdir dir="classes" />
+		<javac destdir="classes" debug="true" source="${java.source}">
+			<src path="src" />
+			<src path="generated" />
+			<classpath>
+				<pathelement location="classes" />
+				<pathelement location="${abc.dir}/classes" />
+				<pathelement location="${abc.dir}/runtime-classes" />
+				<pathelement location="${abc.dir}/lib/abc.jar" />
+				<pathelement location="${abc-ja.loc}/lib/abc-ja.jar" />
+				<pathelement location="${abc-ja-ext.loc}/lib/abc-ja-exts.jar" />
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+				<pathelement location="${soot.loc}" />
+				<pathelement location="${jasmin.loc}" />
+				<pathelement location="${bat2xml.loc}" />
+				<pathelement location="${jdom.loc}" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="flex-translator" depends="settings,jflex-dep" unless="jflex-up-to-date">
+		<mkdir dir="generated/abc/aspectj/parse" />
+		<mkdir dir="generated/abc/eaj/parse" />
+		<mkdir dir="generated/ca/mcgill/sable/clara/parse" />
+		<java classname="JFlex.Main" fork="true" dir="." failonerror="true">
+			<classpath>
+				<pathelement location="${jflex.loc}" />
+			</classpath>
+            <arg line="-d generated/abc/aspectj/parse ${abc.dir}/src/abc/aspectj/parse/aspectj.flex"/>
+		</java>
+	</target>
+
+	<target name="jflex-dep" depends="settings">
+		<dependset>
+			<srcfileset dir="src/ca/mcgill/sable/clara/parse" includes="aspectj.flex" />
+			<targetfileset dir="generated/abc/aspectj/parse" includes="Lexer_c.java" />
+		</dependset>
+		<condition property="jflex-up-to-date">
+			<and>
+				<available file="generated/abc/aspectj/parse/Lexer_c.java" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="cup-translator" depends="settings,flex-translator,cup-dep,ppg-translator" unless="cup-up-to-date">
+		<mkdir dir="generated/abc/aspectj/parse" />
+		<mkdir dir="generated/abc/eaj/parse" />
+		<mkdir dir="generated/ca/mcgill/sable/clara/parse" />
+		<java classname="java_cup.Main" fork="true" dir="generated/abc/aspectj/parse" failonerror="true">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="aspectj_ppg.cup" />
+		</java>
+		<java classname="java_cup.Main" fork="true" dir="generated/abc/eaj/parse" failonerror="true">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="eaj_ppg.cup" />
+		</java>
+		<java classname="java_cup.Main" fork="true" dir="generated/ca/mcgill/sable/clara/parse" failonerror="true">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="da_ppg.cup" />
+		</java>
+	</target>
+
+	<target name="cup-dep" depends="ppg-translator,settings">
+		<dependset>
+			<srcfileset dir="generated/abc/aspectj/parse" includes="aspectj_ppg.cup" />
+			<targetfileset dir="generated/abc/aspectj/parse" includes="Grm.java,sym.java" />
+		</dependset>
+		<dependset>
+			<srcfileset dir="generated/abc/eaj/parse" includes="eaj_ppg.cup" />
+			<targetfileset dir="generated/abc/eaj/parse" includes="Grm.java,sym.java" />
+		</dependset>
+		<dependset>
+			<srcfileset dir="generated/ca/mcgill/sable/clara/parse" includes="da_ppg.cup" />
+			<targetfileset dir="generated/ca/mcgill/sable/clara/parse" includes="Grm.java,sym.java" />
+		</dependset>
+		<condition property="cup-up-to-date">
+			<and>
+				<available file="generated/abc/aspectj/parse/Grm.java" />
+				<available file="generated/abc/aspectj/parse/sym.java" />
+				<available file="generated/abc/eaj/parse/Grm.java" />
+				<available file="generated/abc/eaj/parse/sym.java" />
+				<available file="generated/ca/mcgill/sable/clara/parse/Grm.java" />
+				<available file="generated/ca/mcgill/sable/clara/parse/sym.java" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="ppg-translator" depends="settings,ppg-dep,flex-translator" unless="ppg-up-to-date">
+		<mkdir dir="generated/abc/aspectj/parse" />
+		<mkdir dir="generated/abc/eaj/parse" />
+		<mkdir dir="generated/ca/mcgill/sable/clara/parse" />
+		<java classname="ppg.PPG" fork="true" dir="${abc.dir}/src/abc/aspectj/parse" failonerror="true" output="generated/abc/aspectj/parse/aspectj_ppg.cup">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="aspectj.ppg" />
+		</java>
+		<java classname="ppg.PPG" fork="true" dir="${abc.dir}/src/abc/eaj/parse" failonerror="true" output="generated/abc/eaj/parse/eaj_ppg.cup">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="eaj.ppg" />
+		</java>
+		<java classname="ppg.PPG" fork="true" dir="src/ca/mcgill/sable/clara/parse" failonerror="true" output="generated/ca/mcgill/sable/clara/parse/da_ppg.cup">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="da.ppg" />
+		</java>
+	</target>
+	<target name="ppg-dep" depends="settings">
+		<dependset>
+			<srcfileset dir="${abc.dir}/src/abc/aspectj/parse" includes="aspectj.ppg" />
+			<targetfileset dir="generated/abc/aspectj/parse" includes="aspectj_ppg.cup" />
+		</dependset>
+		<dependset>
+			<srcfileset dir="${abc.dir}/src/abc/eaj/parse" includes="eaj.ppg" />
+			<targetfileset dir="generated/abc/eaj/parse" includes="eaj_ppg.cup" />
+		</dependset>
+		<dependset>
+			<srcfileset dir="src/ca/mcgill/sable/clara/parse" includes="da.ppg" />
+			<targetfileset dir="generated/ca/mcgill/sable/clara/parse" includes="$da_ppg.cup" />
+		</dependset>
+		<condition property="ppg-up-to-date">
+			<and>
+				<available file="generated/abc/aspectj/parse/aspectj_ppg.cup" />
+				<available file="generated/abc/eaj/parse/eaj_ppg.cup" />
+				<available file="generated/ca/mcgill/sable/clara/parse/da_ppg.cup" />
+			</and>
+		</condition>
+	</target>
+
+	<target name="javadoc" depends="settings">
+		<javadoc destdir="javadoc" link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/;http://java.sun.com/j2se/${java.source}/docs/api/" maxmemory="200m" windowtitle="ABC compiler" verbose="true">
+			<fileset dir="src" includes="**/*.java" />
+			<fileset dir="${abc.dir}/src" includes="**/*.java" />
+		</javadoc>
+	</target>
+
+	<target name="runtime-javadoc">
+		<javadoc destdir="runtime-javadoc" link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/;http://java.sun.com/j2se/${java.source}/docs/api/" maxmemory="200m" windowtitle="ABC compiler" verbose="true">
+			<fileset dir="${abc.dir}/runtime-src" includes="**/*.java" />
+		</javadoc>
+	</target>
+
+	<target name="clean" depends="settings">
+		<delete quiet="true" includeEmptyDirs="yes">
+			<fileset dir="runtime-classes" includes="**" />
+			<fileset dir="classes" includes="**" />
+			<fileset dir="testing-classes" includes="**" />
+			<fileset dir="paddle-classes" includes="**" />
+			<fileset dir="lib" includes="**/*.jar" />
+			<fileset dir="ajc-harness/classes" includes="**" />
+			<fileset dir="ajc-harness/lib" includes="abc-tests.jar" />
+			<fileset dir="doc/options" includes="*.dvi,*.pdf,*.aux,*.ps,*.tex,*.toc,*.log" />
+		</delete>
+	</target>
+
+	<target name="clobber" depends="veryclean" />
+
+	<target name="veryclean" depends="settings,clean">
+		<delete quiet="true">
+			<fileset dir="generated" includes="**/*" />
+		</delete>
+	</target>
+
+	<target name="clean-test-outputs">
+		<delete quiet="true" includeemptydirs="true">
+			<fileset dir="tests" includes="**/*.output" />
+			<fileset dir="tests" includes="**/*.class" />
+		</delete>
+	</target>		
+
+	<target name="aspectj5-parser" depends="settings">
+		<mkdir dir="generated/abc/aspectj5/parse" />
+		<java classname="JFlex.Main" fork="true" dir="." failonerror="true">
+			<classpath>
+				<pathelement location="${jflex.loc}" />
+			</classpath>
+			<arg line="-d generated/abc/aspectj5/parse ${abc.dir}/src/abc/aspectj5/parse/aspectj5.flex" />
+		</java>
+		<java classname="ppg.PPG" fork="true" dir="${abc.dir}/src/abc/aspectj5/parse" failonerror="true" output="generated/abc/aspectj5/parse/aspectj5_ppg.cup">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="aspectj5.ppg" />
+		</java>
+		<java classname="java_cup.Main" fork="true" dir="generated/abc/aspectj5/parse" failonerror="true">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="aspectj5_ppg.cup" />
+		</java>
+	</target>
+
+	<target name="aspectj5-parser-exp" depends="settings">
+		<mkdir dir="generated/abc/aspectj5/parse" />
+		<java classname="JFlex.Main" fork="true" dir="." failonerror="true">
+			<classpath>
+				<pathelement location="${jflex.loc}" />
+			</classpath>
+			<arg line="-d generated/abc/aspectj5/parse ${abc.dir}/src/abc/aspectj5/parse/aspectj5.flex" />
+		</java>
+		<java classname="ppg.PPG" fork="true" dir="${abc.dir}/src/abc/aspectj5/parse" failonerror="true" output="generated/abc/aspectj5/parse/aspectj5exp_ppg.cup">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="aspectj5exp.ppg" />
+		</java>
+		<java classname="java_cup.Main" fork="true" dir="generated/abc/aspectj5/parse" failonerror="true">
+			<classpath>
+				<pathelement location="${polyglot.loc}" />
+				<pathelement location="${polyglot.cupclasses.loc}" />
+			</classpath>
+			<arg line="aspectj5exp_ppg.cup" />
+		</java>
+	</target>
+
+    <target name="run" depends="complete-jar">
+        <java classname="abc.main.Main" fork="true" dir=".">
+			<classpath>
+				<pathelement location="lib/abc-complete.jar" />
+			</classpath>
+			<arg line="-ext abc.${ext.name} ${ext.arguments}" />
+        </java>
+    </target>
+	
+    <target name="test" depends="complete-jar">
+        <java classname="abc.testing.Main" fork="true" dir="tests" maxmemory="1024m">
+			<classpath>
+				<pathelement location="${abc.loc}/lib/abc-testing.jar" />
+		        <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+				<pathelement location="lib/clara-complete.jar" />
+			</classpath>
+			<arg line="claraTests.xml" />
+        </java>
+    </target>
+
+		
+	<target name="da-parser" depends="settings">
+	  <property name="da-parserdir" location="${basedir}/generated/ca/mcgill/sable/clara/parse"/>
+	  <mkdir dir="${da-parserdir}"/>
+	  <!-- generate the parser phase 1, create a full .lalr
+	     - specification from fragments -->
+	  <concat destfile="${da-parserdir}/JavaParser.all" binary="true" force="no">
+	    <filelist dir="${basedir}">
+	      <file name="src/ca/mcgill/sable/clara/parse/header.parser"/>
+	    </filelist>
+	    <filelist dir="${frontend}">
+	      <file name="parser/java14.parser"/>
+	    </filelist>
+	    <fileset dir="${frontend1.5}">
+	      <include name="*.parser"/>
+	    </fileset>
+	    <filelist dir="${abc-ja.loc}">
+	      <file name="src/abc/ja/parse/errorproductions.parser"/>
+	      <file name="src/abc/ja/parse/aspectj.parser"/>
+	    </filelist>
+	    <filelist dir="${abc-ja-ext.loc}">
+	      <file name="src-eaj/abc/ja/eaj/parse/eaj.parser"/>
+	    </filelist>
+	    <filelist dir="${basedir}">
+	      <file name="src/ca/mcgill/sable/clara/parse/da.parser"/>
+	    </filelist>
+	  </concat>
+	  <!-- generate the parser phase 2, translating .lalr to .beaver -->
+		<java classpath="${tools}/JastAddParser.jar:${tools}/beaver-rt.jar"
+	              classname="Main" fork="true" dir="${da-parserdir}">
+			<arg line="JavaParser.all JavaParser.beaver"/>
+		</java>
+	  <!-- generate the parser phase 3, translating .beaver to .java -->
+	  <beaver file="${da-parserdir}/JavaParser.beaver" terminalNames="yes"
+	          compress="no" useSwitch="yes"/>
+	</target>	
+	
+	<target name="da-jrag" depends="settings">
+	  <!-- create AST node types and weave aspect modules -->
+	        <echo message="Generating to ${basedir}/generated..."/>
+	        <mkdir dir="${basedir}/generated"/>
+		<jastadd package="ca.mcgill.sable.clara.jrag" rewrite="true"
+	                beaver="true" noVisitCheck="true"
+	                noCacheCycle="true" noComponentCheck="true"
+	                outdir="${basedir}/generated" lazyMaps="true"
+	                suppressWarnings="false" parentInterface="false">
+			<fileset dir="${frontend}">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+	 			<exclude name="BytecodeAttributes.jrag"/>
+				<exclude name="BytecodeDescriptor.jrag"/>
+				<exclude name="BytecodeReader.jrag"/>
+			</fileset>
+			<fileset dir="${frontend1.5}">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+			</fileset>
+			<fileset dir="${javabackend}">
+				<include name="InnerClasses.jrag"/>
+				<include name="Transformations.jrag"/>
+				<include name="Java2Rewrites.jrag"/>
+			</fileset>
+			<fileset dir="${itds}">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+				<exclude name="JastAdd.*"/>
+				<exclude name="DeclarePrecedence.ast"/>
+				<exclude name="DeclareParents.ast"/>
+				<exclude name="Glue.jrag"/>
+				<exclude name="GlueCodegen.jrag"/>
+			</fileset>
+			<fileset dir="${backend}">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+			</fileset>
+			<fileset dir="${backend1.5}">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+			</fileset>
+			<fileset dir="${abc-ja.loc}/src/abc/ja/jrag">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+			</fileset>
+			<fileset dir="${abc-ja-ext.loc}/src-eaj/abc/ja/eaj/jrag">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+			</fileset>
+			<fileset dir="${basedir}/src/ca/mcgill/sable/clara/jrag">
+				<include name="**/*.ast"/>
+				<include name="**/*.jrag"/>
+				<include name="**/*.jadd"/>
+			</fileset>
+	  </jastadd>
+	</target>	
+
+	
+</project>

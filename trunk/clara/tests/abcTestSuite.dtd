@@ -1,0 +1,107 @@
+<!-- this defines a DOCTYPE for a suite of ajc tests -->
+<!-- element-component mappings are in org.aspectj.testing.xml.AjcSpecXmlReader -->
+<!-- element names are determined by the component XMLNAME static variable -->
+
+   <!ELEMENT suite (ajc-test*)>
+   <!ATTLIST suite suiteDir CDATA #IMPLIED >
+
+   <!ELEMENT ajc-test ((abckeywords)*, compile, (compile | inc-compile | run | ajcrun | abckeywords )*)>
+   <!ATTLIST ajc-test num CDATA #IMPLIED >
+   <!ATTLIST ajc-test title CDATA #REQUIRED >
+   <!ATTLIST ajc-test dir CDATA #REQUIRED >
+   <!ATTLIST ajc-test pr CDATA #IMPLIED >
+   <!ATTLIST ajc-test keywords CDATA #IMPLIED >
+   <!ATTLIST ajc-test comment CDATA #IMPLIED >
+   <!ATTLIST ajc-test abccomment CDATA #IMPLIED>
+
+   <!ELEMENT compile (dir-changes*,file*,(ajcmessage | message | jamessage)*)>
+   <!ATTLIST compile staging CDATA #IMPLIED >
+   <!ATTLIST compile badInput CDATA #IMPLIED >
+   <!ATTLIST compile files CDATA #IMPLIED >
+   <!ATTLIST compile reuseCompiler CDATA #IMPLIED >
+   <!ATTLIST compile includeClassesDir CDATA #IMPLIED >
+   <!ATTLIST compile argfiles CDATA #IMPLIED >
+   <!ATTLIST compile aspectpath CDATA #IMPLIED >
+   <!ATTLIST compile classpath CDATA #IMPLIED >
+   <!ATTLIST compile extdirs CDATA #IMPLIED >
+   <!ATTLIST compile options CDATA #IMPLIED >
+   <!ATTLIST compile sourceroots CDATA #IMPLIED >
+   <!ATTLIST compile inpath CDATA #IMPLIED >
+   <!ATTLIST compile xlintfile CDATA #IMPLIED >
+   <!ATTLIST compile outjar CDATA #IMPLIED >
+
+   <!ELEMENT inc-compile (dir-changes*,message*)>
+   <!ATTLIST inc-compile tag CDATA #REQUIRED >
+   <!ATTLIST inc-compile fresh CDATA #IMPLIED >
+
+   <!ELEMENT run (dir-changes*,message*)>
+   <!ATTLIST run class CDATA #REQUIRED >
+   <!ATTLIST run skipTester CDATA #IMPLIED >
+   <!ATTLIST run vm CDATA #IMPLIED >
+   <!ATTLIST run options CDATA #IMPLIED >
+   <!ATTLIST run errStreamIsError CDATA #IMPLIED >
+   <!ATTLIST run outStreamIsError CDATA #IMPLIED >
+
+   <!ELEMENT ajcrun (dir-changes*,message*)>
+   <!ATTLIST ajcrun class CDATA #REQUIRED >
+   <!ATTLIST ajcrun skipTester CDATA #IMPLIED >
+   <!ATTLIST ajcrun vm CDATA #IMPLIED >
+   <!ATTLIST ajcrun options CDATA #IMPLIED >
+   <!ATTLIST ajcrun errStreamIsError CDATA #IMPLIED >
+   <!ATTLIST ajcrun outStreamIsError CDATA #IMPLIED >
+
+   <!ELEMENT abckeywords (ganesh | aske | oege | laurie | sascha | pavel | julian | jennifer | nate | abclimitation | introductions | polyglot | soot | skip | warningbehaviour )*>
+   
+   <!ELEMENT ganesh EMPTY>
+   <!ELEMENT aske EMPTY>
+   <!ELEMENT oege EMPTY>
+   <!ELEMENT laurie EMPTY>
+   <!ELEMENT sascha EMPTY>
+   <!ELEMENT pavel EMPTY>
+   <!ELEMENT julian EMPTY>
+   <!ELEMENT jennifer EMPTY>
+   <!ELEMENT nate EMPTY>
+   <!ELEMENT abclimitation EMPTY>
+   <!ELEMENT introductions EMPTY>
+   <!ELEMENT polyglot EMPTY>
+   <!ELEMENT soot EMPTY>
+   <!ELEMENT warningbehaviour EMPTY>
+
+   <!ELEMENT file (#PCDATA)>
+   <!ATTLIST file path CDATA #IMPLIED >
+
+   <!ELEMENT message (source*)>
+   <!ATTLIST message kind (abort | fail | error | warning | info | Xlint) #REQUIRED >
+   <!ATTLIST message line CDATA #IMPLIED >
+   <!ATTLIST message text CDATA #IMPLIED >
+   <!ATTLIST message file CDATA #IMPLIED >
+   <!ATTLIST message details CDATA #IMPLIED >
+
+   <!ELEMENT ajcmessage (source*)>
+   <!ATTLIST ajcmessage kind (abort | fail | error | warning | info | Xlint | ignore ) #REQUIRED >
+   <!ATTLIST ajcmessage line CDATA #IMPLIED >
+   <!ATTLIST ajcmessage text CDATA #IMPLIED >
+   <!ATTLIST ajcmessage file CDATA #IMPLIED >
+   <!ATTLIST ajcmessage details CDATA #IMPLIED >
+
+   <!ELEMENT jamessage (source*)>
+   <!ATTLIST jamessage kind (abort | fail | error | warning | info | Xlint | ignore ) #REQUIRED >
+   <!ATTLIST jamessage line CDATA #IMPLIED >
+   <!ATTLIST jamessage text CDATA #IMPLIED >
+   <!ATTLIST jamessage file CDATA #IMPLIED >
+   <!ATTLIST jamessage details CDATA #IMPLIED >
+
+   <!ELEMENT source (#PCDATA)>
+   <!ATTLIST source line CDATA #IMPLIED >
+   <!ATTLIST source file CDATA #IMPLIED >
+
+   <!ELEMENT dir-changes (#PCDATA)>
+   <!ATTLIST dir-changes dirToken (classes | run | ajcrun ) #IMPLIED >
+   <!ATTLIST dir-changes defaultSuffix (.class) #IMPLIED >
+   <!ATTLIST dir-changes added CDATA #IMPLIED >
+   <!ATTLIST dir-changes removed CDATA #IMPLIED >
+   <!ATTLIST dir-changes updated CDATA #IMPLIED >
+   <!ATTLIST dir-changes unchanged CDATA #IMPLIED >
+   <!ATTLIST dir-changes expDir CDATA #IMPLIED >
+   <!ATTLIST dir-changes fastFail CDATA #IMPLIED >
+
