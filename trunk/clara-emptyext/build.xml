@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!--
+
+This is the anc build file for abc.
+The most important tasks are:
+
+- default:
+  Build jars for abc, the abc runtime library
+  and the test drivers.
+- jars:           
+  Build the above plus abc-complete.jar, which holds
+  abc plus all its dependencies.
+- clean:
+  Deletes all compiled class files.
+- veryclean:
+  Deletes all the above plus all generated files.
+- run:
+  Builds abc-complete.jar and then runs it
+  with your extension enabled and the
+  command line arguments specified by
+  ext.arguments in ant.settings.
+
+-->
+
+<project default="default" name="abc">
+
+	<target name="default" depends="jars" />
+
+	<target name="settings">
+		<property file="ant.settings" />
+		<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it." unless="clara.jar" />
+	</target>
+
+	<target name="jars" depends="clara-ext-jar" />
+
+	<target name="libdir">
+		<mkdir dir="lib" />
+	</target>
+
+    <target name="test" depends="settings">
+        <java classname="abc.testing.Main" fork="true" dir="tests" maxmemory="1024m">
+			<classpath>
+				<pathelement location="${abc.loc}/lib/abc-testing.jar" />
+		        <pathelement location="${abc.loc}/ajc-harness/lib/abc-testing-ajc-part.jar"/>
+				<pathelement location="${clara.loc}/lib/clara-complete.jar" />
+				<pathelement location="classes" />
+			</classpath>
+			<arg line="myTests.xml" />
+        </java>
+    </target>
+
+	<target name="clara-ext-jar" depends="clara-ext,libdir,settings">
+		<manifest file="MANIFEST.MF">
+		 <attribute name="Main-Class" value="${analysis.package}.Main"/>
+		</manifest>
+		<jar destfile="lib/clara-${ext.jar.name}-complete.jar" manifest="MANIFEST.MF">
+			<fileset dir="classes" />
+			<zipfileset src="${clara.jar}" />
+		</jar>
+		<delete file="MANIFEST.MF"/>
+	</target>
+	
+	<target name="clara-ext" depends="settings">
+		<mkdir dir="classes" />
+		<javac destdir="classes" debug="true" source="${java.source}">
+			<src path="src" />
+			<classpath>
+				<pathelement location="classes" />
+				<pathelement location="${clara.jar}" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="javadoc" depends="settings">
+		<javadoc destdir="javadoc" link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/;http://java.sun.com/j2se/${java.source}/docs/api/" maxmemory="200m" windowtitle="Clara" verbose="true">
+			<fileset dir="src" includes="**/*.java" />
+			<fileset dir="${clara.loc}/src" includes="**/*.java" />
+			<fileset dir="${abc.dir}/src" includes="**/*.java" />
+		</javadoc>
+	</target>
+
+	<target name="clean" depends="settings">
+		<delete quiet="true" includeEmptyDirs="yes">
+			<fileset dir="classes" includes="**" />
+		</delete>
+	</target>
+	
+
+	<target name="clean-test-outputs">
+		<delete quiet="true" includeemptydirs="true">
+			<fileset dir="tests" includes="**/*.output" />
+			<fileset dir="tests" includes="**/*.class" />
+		</delete>
+	</target>
+		
+
+	<target name="veryclean" depends="settings,clean">
+		<delete quiet="true">
+			<fileset dir="generated" includes="**/*" />
+		</delete>
+	</target>
+
+</project>

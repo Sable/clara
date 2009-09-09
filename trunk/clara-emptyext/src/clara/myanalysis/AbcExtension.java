@@ -1,0 +1,42 @@
+package clara.myanalysis;
+
+import java.util.List;
+
+import abc.weaving.weaver.ReweavingPass;
+import abc.weaving.weaver.ReweavingPass.ID;
+
+/**
+ * @author Eric Bodden
+ */
+public class AbcExtension extends ca.mcgill.sable.clara.AbcExtension
+{
+	/**
+	 * Create a new pass ID with the name <i>foo</i>. This will allow users
+	 * to schedule the analysis using the <tt>-static-analysis foo</tt> command-line
+	 * option.
+	 */
+    public static final ID MY_PASS_ID = new ReweavingPass.ID("foo");
+	
+	@Override
+	public void createReweavingPasses(List<ReweavingPass> passes) {
+		super.createReweavingPasses(passes);
+
+		ReweavingPass myNewPass = new ReweavingPass(
+				MY_PASS_ID, //the pass ID (see above)
+				new MyNewAnalysis(), //the analysis itself
+				DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS 	//declare that the pass MY_PASS_ID depends on the pass
+															//DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS being enabled, too
+		);		
+		//schedule the pass to be run just after DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS 
+		addAfterPass(passes, myNewPass, DEPENDENT_ADVICE_FLOW_INSENSITIVE_ANALYSIS);
+	}
+	
+	protected void collectVersions(StringBuffer versions)
+    {
+		//this String will appear when exeucting Clara with the -version parameter
+        versions.append("MyAnalysis " + new Version().toString() + "\n on ");
+        super.collectVersions(versions);
+    }
+
+	
+}
