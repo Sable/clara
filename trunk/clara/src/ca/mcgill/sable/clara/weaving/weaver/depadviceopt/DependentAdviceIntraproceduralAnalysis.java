@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import polyglot.util.ErrorInfo;
+
 import ca.mcgill.sable.clara.HasDAInfo;
 import ca.mcgill.sable.clara.fsanalysis.EnabledShadowSet;
 import ca.mcgill.sable.clara.fsanalysis.callgraph.AbstractedCallGraph;
@@ -115,6 +117,13 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	        	//we iterate until no shadows are disabled any more
 	        } while(!enabledShadowsBeforeIteration.equals(enabledShadowsAfterIteration));
 
+	        for(AnalysisJob job: methodToJob.values()) {
+	        	for(Shadow s: job.pointsOfCertainMatches()) {
+	        		Main.v().getAbcExtension().forceReportError(ErrorInfo.WARNING, "Detected certain match: "+
+	        				job.tracePattern().getName()+"."+job.symbolNameForShadow(s), s.getPosition());
+	        	}
+	        }
+	        
 			if(Debug.v().outputPFGs)
 				PFGs.v().dump("after flow-sensitive stage", enabledShadowsAfterIteration, false);
 	        
