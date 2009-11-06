@@ -40,19 +40,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import ca.mcgill.sable.clara.fsanalysis.EnabledShadowSet;
-import ca.mcgill.sable.clara.fsanalysis.callgraph.AbstractedCallGraph;
-import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Configuration;
-import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Disjunct;
-import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Configuration.MaxConfigException;
-import ca.mcgill.sable.clara.fsanalysis.mustalias.InstanceKeyNonRefLikeType;
-import ca.mcgill.sable.clara.fsanalysis.ranking.Ranking;
-import ca.mcgill.sable.clara.fsanalysis.util.SymbolNames;
-import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
-import ca.mcgill.sable.clara.weaving.aspectinfo.InvertedTracePattern;
-import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
-import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
-
 import polyglot.util.ErrorInfo;
 import soot.Local;
 import soot.MethodOrMethodContext;
@@ -68,12 +55,21 @@ import soot.jimple.toolkits.pointer.LocalMustNotAliasAnalysis;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.InverseGraph;
-import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ConfigurationSet;
-import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ReachingStatesAnalysis;
-import ca.mcgill.sable.clara.fsanalysis.flowanalysis.UnnecessaryShadowsAnalysis;
 import abc.main.Debug;
 import abc.main.Main;
 import abc.tm.weaving.matching.SMNode;
+import ca.mcgill.sable.clara.fsanalysis.EnabledShadowSet;
+import ca.mcgill.sable.clara.fsanalysis.callgraph.AbstractedCallGraph;
+import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Configuration;
+import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Disjunct;
+import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Configuration.MaxConfigException;
+import ca.mcgill.sable.clara.fsanalysis.mustalias.InstanceKeyNonRefLikeType;
+import ca.mcgill.sable.clara.fsanalysis.ranking.Ranking;
+import ca.mcgill.sable.clara.fsanalysis.util.SymbolNames;
+import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
+import ca.mcgill.sable.clara.weaving.aspectinfo.InvertedTracePattern;
+import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
+import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
 
 /**
  * An analysis job is a parameter object to a {@link TMWorklistBasedAnalysis}.
@@ -115,6 +111,8 @@ public class AnalysisJob {
 	protected final Map<Stmt,Set<SootMethod>> transitivelyCalledMethods;
 
 	protected final Map<Shadow,EnabledShadowSet> shadowToOverlaps;
+	
+	private final Set<Shadow> pointsOfCertainMatches;
 
 	/**
 	 * Creates a new job.
@@ -230,6 +228,8 @@ public class AnalysisJob {
 			System.err.println("Number of potentially-recursive-call statements: "+recursiveCallStmts.size());
 			System.err.println("Number of non-recursive call statements: "+(callStmts.size()-recursiveCallStmts.size()));
 		}
+		
+		this.pointsOfCertainMatches = new HashSet<Shadow>();
 	}
 	
 	public TracePattern tracePattern() {
@@ -319,6 +319,7 @@ public class AnalysisJob {
 				backwardAnalysis.doAnalysis();
 				int backwardCounter = Configuration.counter;
 				
+
 				//find unnecessary shadows
 				UnnecessaryShadowsAnalysis unnecessaryShadowsAnalysis = new UnnecessaryShadowsAnalysis(this,forwardAnalysis,backwardAnalysis);				
 				
@@ -344,6 +345,11 @@ public class AnalysisJob {
 					}
 				} else {
 					//we found no unnecessary shadow; give up
+
+					//but before, still print out all certain matches
+					CertainMatchAnalysis certainMatchAnalysis = new CertainMatchAnalysis(unnecessaryShadowsAnalysis);				
+					pointsOfCertainMatches.addAll(certainMatchAnalysis.pointsOfCertainMatches());
+					
 					break;
 				}
 			}
@@ -547,7 +553,7 @@ public class AnalysisJob {
 		
 	}
 
-	protected void warn(Shadow s, String reason) {	
+	public void warn(Shadow s, String reason) {	
 		Main.v().getAbcExtension().forceReportError(ErrorInfo.WARNING, "Shadow was disabled because it is unnecessary ("+reason+"): "+
 				tracePattern().getName()+"."+symbolNameForShadow(s), s.getPosition());
 	}
@@ -654,6 +660,10 @@ public class AnalysisJob {
 		System.err.println();
 		System.err.println();
 		
+	}
+
+	public Set<Shadow> pointsOfCertainMatches() {
+		return pointsOfCertainMatches;
 	}
 	
 	
