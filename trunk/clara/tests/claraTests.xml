@@ -155,7 +155,7 @@
 
    <ajc-test num="1302" dir="tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-insensitive stage">
-        <compile files="FlowIns.java" options="-ext,clara.myanalysis,-static-analyses,quick-osa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FlowIns.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
 	    	<message kind="warning" line="12"/>
 	    	<message kind="warning" line="13"/>
 		</compile>
