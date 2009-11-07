@@ -39,6 +39,7 @@ import ca.mcgill.sable.clara.fsanalysis.util.SymbolNames;
 import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.DependentAdviceFlowInsensitiveAnalysis;
 import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.DependentAdviceIntraproceduralAnalysis;
 import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.DependentAdviceQuickCheck;
+import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ResultListeners;
 import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
 
 import polyglot.util.ErrorInfo;
@@ -339,6 +340,7 @@ public class DAInfo {
 		SymbolNames.reset();
 		OutputDotGraphs.reset();    
 		Disjunct.reset();
+		ResultListeners.reset();
 	}
 	
 	/**
