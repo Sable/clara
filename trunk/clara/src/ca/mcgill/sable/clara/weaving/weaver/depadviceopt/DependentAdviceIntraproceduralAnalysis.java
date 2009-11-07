@@ -37,6 +37,7 @@ import ca.mcgill.sable.clara.fsanalysis.EnabledShadowSet;
 import ca.mcgill.sable.clara.fsanalysis.callgraph.AbstractedCallGraph;
 import ca.mcgill.sable.clara.fsanalysis.callgraph.NodePredicate;
 import ca.mcgill.sable.clara.fsanalysis.flowanalysis.AnalysisJob;
+import ca.mcgill.sable.clara.fsanalysis.flowanalysis.TransitionInfo;
 import ca.mcgill.sable.clara.fsanalysis.ranking.PFGs;
 import ca.mcgill.sable.clara.fsanalysis.util.ShadowsPerTMSplitter;
 import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
@@ -66,8 +67,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	protected int analysisCount;
 	
 	protected Map<SootMethod,AnalysisJob> methodToJob = new HashMap<SootMethod, AnalysisJob>();
-	
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -122,6 +122,18 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	        		Main.v().getAbcExtension().forceReportError(ErrorInfo.WARNING, "Detected certain match: "+
 	        				job.tracePattern().getName()+"."+job.symbolNameForShadow(s), s.getPosition());
 	        	}
+	        }
+	        
+	        Set<ResultListener> resultListeners = ResultListeners.v().getResultListeners();
+			if(!resultListeners.isEmpty()) {
+		        Set<TransitionInfo> results = new HashSet<TransitionInfo>();
+		        for(AnalysisJob job: methodToJob.values()) {
+		    		results.addAll(job.computeResults());
+		        }
+		        
+		    	for(ResultListener l: resultListeners) {
+		    		l.showResult(results);
+		    	}
 	        }
 	        
 			if(Debug.v().outputPFGs)
@@ -283,7 +295,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
         averageTime = Math.round(totalTime / (analysisCount+0.0));
         
         for(AnalysisJob job: methodToJob.values()) {
-        	job.dump();
+        	job.dump();        	
         }
         
         System.err.println("Number of analysis runs: "+analysisCount);
