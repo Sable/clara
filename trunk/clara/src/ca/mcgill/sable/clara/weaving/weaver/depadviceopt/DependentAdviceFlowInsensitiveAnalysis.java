@@ -239,7 +239,6 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 					shadow.disable();
 					if(OptionsParser.v().warn_about_individual_shadows())
 						warn(shadow,"Shadow disabled because it has empty points-to sets.");
-					iter.remove();
 					break;
 				}
 			}
