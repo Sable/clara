@@ -133,7 +133,8 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 		filterForDependentAdvice(allActiveShadows);
 				
 		//disable all unreachable shadows
-		for (Shadow shadow : allActiveShadows) {
+		Set<Shadow> snapshot = new HashSet<Shadow>(allActiveShadows);
+		for (Shadow shadow : snapshot) {
 			if(!reachableActiveShadows.contains(shadow)) {
 				shadow.disable();
 				if(OptionsParser.v().warn_about_individual_shadows())
@@ -232,7 +233,8 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 	}
 	
 	protected void disableAndFilterShadowsWithEmptyPointsToSet(Set<Shadow> shadows) {
-		for (Iterator<Shadow> iter = shadows.iterator(); iter.hasNext();) {
+		Set<Shadow> snapshot = new HashSet<Shadow>(shadows);
+		for (Iterator<Shadow> iter = snapshot.iterator(); iter.hasNext();) {
 			Shadow shadow = iter.next();
 			for (String var : shadow.getAdviceFormalNames()) {				
 				if(!shadow.isPrimitiveFormal(var) && shadow.pointsToSetOf(var).isEmpty()) {
