@@ -36,6 +36,7 @@ import java.util.Set;
 import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
 import polyglot.util.StdErrorQueue;
+import soot.Body;
 import soot.Local;
 import soot.MethodOrMethodContext;
 import soot.PointsToSet;
@@ -51,10 +52,16 @@ import soot.jimple.spark.ondemand.AllocAndContextSet;
 import soot.jimple.spark.ondemand.LazyContextSensitivePointsToSet;
 import soot.jimple.toolkits.callgraph.ReachableMethods;
 import soot.jimple.toolkits.pointer.FullObjectSet;
+import soot.tagkit.AnnotationArrayElem;
+import soot.tagkit.AnnotationElem;
+import soot.tagkit.AnnotationStringElem;
+import soot.tagkit.AnnotationTag;
 import soot.tagkit.Host;
 import soot.tagkit.LineNumberTag;
+import soot.tagkit.ParamNamesTag;
 import soot.tagkit.SourceLnNamePosTag;
 import soot.tagkit.SourceLnPosTag;
+import soot.tagkit.VisibilityAnnotationTag;
 import soot.util.IdentityHashSet;
 import soot.util.queue.QueueReader;
 import abc.main.Debug;
@@ -67,13 +74,16 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.matching.MethodCallShadowMatch;
+import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.residues.AndResidue;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ResidueBox;
 import abc.weaving.tagkit.InstructionShadowTag;
 import abc.weaving.tagkit.InstructionSourceTag;
+import ca.mcgill.sable.clara.HasDAInfo;
 import ca.mcgill.sable.clara.fsanalysis.util.SymbolNames;
+import ca.mcgill.sable.clara.weaving.aspectinfo.DAInfo;
 
 /**
  * Represents a joinpoint shadow in Jimple. Useful for shadow-based optimizations.
@@ -400,6 +410,9 @@ public class Shadow implements Comparable<Shadow> {
 
 		Set<Shadow> shadows = new HashSet<Shadow>();
 		for (SootMethod m : methods) {
+
+			shadows.addAll(findShadowsFromAnnotations(m));
+
 			Map<Integer,Map<AbstractAdviceDecl,AdviceApplication>> shadowIdToAdviceToAdviceApplication = new HashMap<Integer,Map<AbstractAdviceDecl,AdviceApplication>>();
 	        MethodAdviceList adviceList = gai.getAdviceList(m);
 
@@ -497,6 +510,123 @@ public class Shadow implements Comparable<Shadow> {
 		return shadows;
 	}
 
+	protected static Set<Shadow> findShadowsFromAnnotations(SootMethod m) {
+		List<String> sequence = findPreconditionSequenceFromAnnotation(m);
+		Map<Integer, List<String>> paramIndexToSequence = resolveParameters(sequence, m);
+		return generateShadows(paramIndexToSequence,m);
+	}
+
+	private static Set<Shadow> generateShadows(Map<Integer, List<String>> paramIndexToSequence, SootMethod m) {
+		if(paramIndexToSequence.isEmpty()) return Collections.emptySet();
+		
+		Set<Shadow> shadows = new HashSet<Shadow>();
+		HasDAInfo abcExtension = (HasDAInfo) Main.v().getAbcExtension();
+		DAInfo dai = abcExtension.getDependentAdviceInfo();
+		
+		Body body = m.getActiveBody();
+		for (Map.Entry<Integer,List<String>> entry : paramIndexToSequence.entrySet()) {
+			int index= entry.getKey();
+			Local paramLocal = (!m.isStatic() && index==0) ? body.getThisLocal() : body.getParameterLocal(index);
+			
+			List<String> symbolNames = entry.getValue();
+			
+			for (String symbolName : symbolNames) {
+				AdviceDecl ad = dai.findAdviceDeclWithName(symbolName);
+				Map<String,Local> adviceFormalNameToSootLocal = new HashMap<String, Local>();
+				//FIXME must assign correct name of tracematch variable here!
+				adviceFormalNameToSootLocal.put("i", paramLocal);
+				
+				ResidueBox residueBox = new ResidueBox();
+				residueBox.setResidue(AlwaysMatch.v());
+				
+				Shadow shadow = new Shadow(
+						-1,
+						ad,
+						m,
+						Position.COMPILER_GENERATED,
+						adviceFormalNameToSootLocal,
+						residueBox,
+						(Stmt)body.getUnits().getFirst(),
+						false
+				);
+				shadows.add(shadow);
+			}
+		}	
+		return shadows;
+	}
+	
+	protected static Map<Integer, List<String>> resolveParameters(List<String> sequence, SootMethod sootMethod) {
+		if(sequence.isEmpty()) return Collections.emptyMap(); 
+		
+		ParamNamesTag tag = (ParamNamesTag) sootMethod.getTag("ParamNamesTag");
+		if(tag==null) {
+			throw new IllegalStateException("No parameter names present. Cannot use annotation: "+sequence);
+		}
+		
+		ArrayList<String> paramNames = new ArrayList<String>();
+		if(!sootMethod.isStatic())
+			paramNames.add("this"); //must be added first so that it has index 0
+		paramNames.addAll(tag.getNames());
+		
+		Map<Integer,List<String>> paramIndexToSequence = new HashMap<Integer, List<String>>();
+		
+		for (String string : sequence) {
+			if(!string.contains(".")) {
+				throw new IllegalArgumentException("Annotation string has an illegal format:" +string);
+			}
+			String[] split = string.split("\\.");
+			if(split.length!=2) {
+				throw new IllegalArgumentException("Annotation string has an illegal format:" +string);
+			}
+			String varName = split[0];
+			String symbolName = split[1];
+		
+			if(!paramNames.contains(varName)) {
+				throw new IllegalArgumentException("Unknown parameter: "+varName);
+			}
+			if(varName.equals("this") && sootMethod.isStatic()) {
+				throw new IllegalArgumentException("cannot refer to 'this' in a static context");
+			}
+			
+			//TODO validate symbol name
+			
+			int paramIndex = paramNames.indexOf(varName);
+			List<String> paramSequence = paramIndexToSequence.get(paramIndex);
+			if(paramSequence==null) {
+				paramSequence = new ArrayList<String>();
+				paramIndexToSequence.put(paramIndex, paramSequence);
+			}			
+			paramSequence.add(symbolName);
+		}
+		
+		return paramIndexToSequence;
+	}
+
+	/**
+	 * Creates shadows from precondition annotations.
+	 * @return 
+	 */
+	protected static List<String> findPreconditionSequenceFromAnnotation(SootMethod m) {		
+		List<String> sequence = new ArrayList<String>();
+		
+		VisibilityAnnotationTag visAnnotationTag = (VisibilityAnnotationTag) m.getTag("VisibilityAnnotationTag");		
+		if(visAnnotationTag==null) return Collections.emptyList();
+		ArrayList<AnnotationTag> annotations = visAnnotationTag.getAnnotations();
+		if(annotations.isEmpty()) return Collections.emptyList();
+		
+		for (AnnotationTag annotationTag : annotations) {
+			for(int i=0; i<annotationTag.getNumElems(); i++) {
+				AnnotationArrayElem annotation = (AnnotationArrayElem) annotationTag.getElemAt(i);
+				ArrayList<AnnotationElem> elems = annotation.getValues();
+				for (AnnotationElem annotationElem : elems) {
+					AnnotationStringElem stringElem = (AnnotationStringElem) annotationElem;
+					sequence.add(stringElem.getValue());
+				}
+			}
+		}
+		
+		return sequence;
+	}
 	/**
 	 * Returns the position at which the shadow was woven.
 	 */
