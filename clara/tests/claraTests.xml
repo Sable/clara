@@ -359,4 +359,10 @@
 		</compile>
         <run class="Test"/>
     </ajc-test>
+
+    <ajc-test num="1500" dir="da/annotation"
+        title="Precon annotation">
+        <compile files="Main.java,Precon.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa">
+		</compile>
+    </ajc-test>
 </suite>

@@ -103,8 +103,6 @@ public class DependentAdviceFlowInsensitiveAnalysis extends AbstractReweavingAna
 
 		long before = System.currentTimeMillis();
 
-		dai.getAllActiveShadows();
-		
 		if(debug)
 			System.err.println("da: Computing points-to sets");
 		//perform pointer analysis if necessary
