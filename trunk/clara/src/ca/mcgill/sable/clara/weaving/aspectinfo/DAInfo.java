@@ -366,4 +366,27 @@ public class DAInfo {
 		}
 		return allActiveShadows;
 	}
+	
+	/**
+	 * Returns the first advice declaration with the stated unqualified (!) advice name.
+	 */
+	public AdviceDecl findAdviceDeclWithName(String dependentAdviceName) {
+		List<AbstractAdviceDecl> adviceDecls = Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceDecls();
+		for(Map.Entry<String,String> entry : adviceMethodNameToAdviceShortName.entrySet()) {
+			String humanReadableName = entry.getValue();
+			if(humanReadableName.endsWith("."+dependentAdviceName)) {
+				String internalAdviceName = entry.getKey();
+				for (AbstractAdviceDecl abstractAdviceDecl : adviceDecls) {
+					if(abstractAdviceDecl instanceof AdviceDecl) {
+						AdviceDecl adviceDecl = (AdviceDecl) abstractAdviceDecl;
+						String adviceName = adviceDecl.getAspect().getName()+"."+adviceDecl.getImpl().getName();
+						if(adviceName.equals(internalAdviceName)) {
+							return adviceDecl;
+						}
+					}
+				}
+			}			
+		}		
+		throw new InternalError("No appropriate advice declaration found");
+	}
 }
