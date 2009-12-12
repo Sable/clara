@@ -105,7 +105,7 @@ public abstract class WorklistBasedAnalysis extends WorklistAnalysis<Unit, Confi
 	}
 	
 	@Override
-	protected void doAnalysis() {
+	public void doAnalysis() {
 		if(Debug.v().debugDA) {
 			Configuration.counter = 0;
 		}

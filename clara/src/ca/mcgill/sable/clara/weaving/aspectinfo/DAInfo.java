@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ca.mcgill.sable.clara.ShadowReportForUI;
 import ca.mcgill.sable.clara.fianalysis.PathInfoFinder;
 import ca.mcgill.sable.clara.fianalysis.PathInfoFinder.PathInfo;
 import ca.mcgill.sable.clara.fsanalysis.EnabledShadowSet;
@@ -78,6 +79,9 @@ public class DAInfo {
 
 	/** The set of enabled shadows in the program. */
 	protected EnabledShadowSet allActiveShadows;
+	
+	/** The shadow report for the graphical UI */
+	protected ShadowReportForUI report;
 
 	/**
 	 * Registers a new advice dependency.
@@ -388,5 +392,10 @@ public class DAInfo {
 			}			
 		}		
 		throw new InternalError("No appropriate advice declaration found");
+	}
+	
+	public ShadowReportForUI shadowReport() {
+		if(report == null) report = new ShadowReportForUI();
+		return report;
 	}
 }
