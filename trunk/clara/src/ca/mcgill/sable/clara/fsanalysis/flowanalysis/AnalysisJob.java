@@ -292,51 +292,6 @@ public class AnalysisJob {
 		}
 	}
 	
-	public Set<TransitionInfo> computeResults() {
-		Set<TransitionInfo> result = new HashSet<TransitionInfo>();
-		
-		Set<Shadow> allShadows = new HashSet<Shadow>(allEnabledTMShadowsInMethod());
-		
-		//compute for every statement, which states can reach this statement from the program entry
-		ReachingStatesAnalysis forwardAnalysis = new ReachingStatesAnalysis(this, true);
-		forwardAnalysis.doAnalysis();
-		
-		//compute for every statement the set of states from which one could reach a final state using the remainder of the program
-		ReachingStatesAnalysis backwardAnalysis = new ReachingStatesAnalysis(this, false);
-		backwardAnalysis.doAnalysis();
-		
-
-		//find unnecessary shadows
-		UnnecessaryShadowsAnalysis unnecessaryShadowsAnalysis = new UnnecessaryShadowsAnalysis(this,forwardAnalysis,backwardAnalysis);				
-				
-		for (Unit unit : unitGraph()) {			
-			
-			boolean hasShadow = false;
-			for (Shadow shadow : allShadows) {
-				if(shadow.getAdviceBodyInvokeStmt().equals(unit)) {
-					hasShadow = true;
-					break;
-				}
-			}
-			if(!hasShadow) continue;
-			
-			for (Shadow shadow : allShadows) {
-				if(shadow.getAdviceBodyInvokeStmt().equals(unit)) {
-					TransitionInfo ti = new TransitionInfo(
-							symbolNameForShadow(shadow),
-							unnecessaryShadowsAnalysis.transitions(shadow),
-							unnecessaryShadowsAnalysis.liveStatesSetsAfterTransition(shadow),
-							shadow.getPosition()					
-					);
-					result.add(ti);
-				}
-			}
-		}
-		
-		return result;
-	}
-	
-	
 	public void compute(File traceFile) {
 		if(Debug.v().debugDA) {
 			System.err.println("Analyzing method: "+method().getSignature());

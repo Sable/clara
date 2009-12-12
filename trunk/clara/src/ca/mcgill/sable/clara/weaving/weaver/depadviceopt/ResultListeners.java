@@ -4,7 +4,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import ca.mcgill.sable.clara.fsanalysis.flowanalysis.TransitionInfo;
+
 public class ResultListeners {
+	
+	
 
 	public static ResultListeners instance;
 	
@@ -25,7 +29,19 @@ public class ResultListeners {
 		return instance;
 	}
 
-	private ResultListeners() {}
+	private ResultListeners() {
+		
+		resultListeners.add(new ResultListener() {
+			
+			@Override
+			public void showResult(Set<TransitionInfo> results) {
+				System.out.println(results);
+			}
+		});
+
+		
+	}
 	
 	public static void reset() { instance = null; }
+
 }

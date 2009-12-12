@@ -33,6 +33,7 @@ import java.util.Set;
 import polyglot.util.ErrorInfo;
 
 import ca.mcgill.sable.clara.HasDAInfo;
+import ca.mcgill.sable.clara.ShadowReportForUI;
 import ca.mcgill.sable.clara.fsanalysis.EnabledShadowSet;
 import ca.mcgill.sable.clara.fsanalysis.callgraph.AbstractedCallGraph;
 import ca.mcgill.sable.clara.fsanalysis.callgraph.NodePredicate;
@@ -127,8 +128,11 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	        Set<ResultListener> resultListeners = ResultListeners.v().getResultListeners();
 			if(!resultListeners.isEmpty()) {
 		        Set<TransitionInfo> results = new HashSet<TransitionInfo>();
+		        ShadowReportForUI shadowReport = abcExtension.getDependentAdviceInfo().shadowReport();
+		        shadowReport.initialize(enabledShadowsAfterIteration);
+		        
 		        for(AnalysisJob job: methodToJob.values()) {
-		    		results.addAll(job.computeResults());
+		    		results.addAll(shadowReport.computeResultsForJob(job));
 		        }
 		        
 		    	for(ResultListener l: resultListeners) {
