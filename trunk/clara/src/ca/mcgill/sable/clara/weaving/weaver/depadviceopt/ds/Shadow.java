@@ -24,6 +24,7 @@ package ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -500,8 +501,8 @@ public class Shadow implements Comparable<Shadow> {
 			}
 		}
 		
-		for (Iterator iterator = shadows.iterator(); iterator.hasNext();) {
-			Shadow shadow = (Shadow) iterator.next();
+		for (Iterator<Shadow> iterator = shadows.iterator(); iterator.hasNext();) {
+			Shadow shadow = iterator.next();
 			if(SymbolNames.v().isArtificialShadow(shadow)) {
 				iterator.remove();
 			}
@@ -512,94 +513,120 @@ public class Shadow implements Comparable<Shadow> {
 
 	protected static Set<Shadow> findShadowsFromAnnotations(SootMethod m) {
 		List<String> sequence = findPreconditionSequenceFromAnnotation(m);
-		Map<Integer, List<String>> paramIndexToSequence = resolveParameters(sequence, m);
-		return generateShadows(paramIndexToSequence,m);
+		List<SymbolAndParams> resolved = resolveParameters(sequence, m);
+		return generateShadows(resolved,m);
 	}
+	
+	
 
-	private static Set<Shadow> generateShadows(Map<Integer, List<String>> paramIndexToSequence, SootMethod m) {
-		if(paramIndexToSequence.isEmpty()) return Collections.emptySet();
+	private static Set<Shadow> generateShadows(List<SymbolAndParams> resolved, SootMethod m) {
+		if(resolved.isEmpty()) return Collections.emptySet();
 		
 		Set<Shadow> shadows = new HashSet<Shadow>();
 		HasDAInfo abcExtension = (HasDAInfo) Main.v().getAbcExtension();
 		DAInfo dai = abcExtension.getDependentAdviceInfo();
 		
 		Body body = m.getActiveBody();
-		for (Map.Entry<Integer,List<String>> entry : paramIndexToSequence.entrySet()) {
-			int index= entry.getKey();
-			Local paramLocal = (!m.isStatic() && index==0) ? body.getThisLocal() : body.getParameterLocal(index);
+		for (SymbolAndParams symbolAndParam: resolved) {
+			String symbolName = symbolAndParam.symbol;
 			
-			List<String> symbolNames = entry.getValue();
+			AdviceDecl ad = dai.findAdviceDeclWithName(symbolName);
 			
-			for (String symbolName : symbolNames) {
-				AdviceDecl ad = dai.findAdviceDeclWithName(symbolName);
-				Map<String,Local> adviceFormalNameToSootLocal = new HashMap<String, Local>();
-				//FIXME must assign correct name of tracematch variable here!
-				adviceFormalNameToSootLocal.put("i", paramLocal);
-				
-				ResidueBox residueBox = new ResidueBox();
-				residueBox.setResidue(AlwaysMatch.v());
-				
-				Shadow shadow = new Shadow(
-						-1,
-						ad,
-						m,
-						Position.COMPILER_GENERATED,
-						adviceFormalNameToSootLocal,
-						residueBox,
-						(Stmt)body.getUnits().getFirst(),
-						false
-				);
-				shadows.add(shadow);
+			if(symbolAndParam.params.size()!=ad.getFormals().size()) {
+				throw new IllegalArgumentException("Wrong number of parmaters: "+symbolAndParam.params.size()+" (expected "+ad.getFormals().size()+")");
 			}
+			
+			Map<String,Local> adviceFormalNameToSootLocal = new HashMap<String, Local>();			
+
+			int i=0;
+			for (Local paramLocal : symbolAndParam.params) {
+				//FIXME we should use the virtual variable name induced by the dependency here, not the advice-formal name
+				String formalName = ad.getFormals().get(i++).getName();
+				adviceFormalNameToSootLocal.put(formalName, paramLocal);
+			}
+			
+			ResidueBox residueBox = new ResidueBox();
+			residueBox.setResidue(AlwaysMatch.v());
+			
+			Shadow shadow = new Shadow(
+					-1,
+					ad,
+					m,
+					Position.COMPILER_GENERATED,
+					adviceFormalNameToSootLocal,
+					residueBox,
+					(Stmt)body.getUnits().getFirst(),
+					false
+			);
+			shadows.add(shadow);
 		}	
 		return shadows;
 	}
 	
-	protected static Map<Integer, List<String>> resolveParameters(List<String> sequence, SootMethod sootMethod) {
-		if(sequence.isEmpty()) return Collections.emptyMap(); 
+	protected static List<SymbolAndParams> resolveParameters(List<String> sequence, SootMethod m) {
+		if(sequence.isEmpty()) return Collections.emptyList(); 
 		
-		ParamNamesTag tag = (ParamNamesTag) sootMethod.getTag("ParamNamesTag");
+		ParamNamesTag tag = (ParamNamesTag) m.getTag("ParamNamesTag");
 		if(tag==null) {
 			throw new IllegalStateException("No parameter names present. Cannot use annotation: "+sequence);
 		}
 		
 		ArrayList<String> paramNames = new ArrayList<String>();
-		if(!sootMethod.isStatic())
+		if(!m.isStatic())
 			paramNames.add("this"); //must be added first so that it has index 0
 		paramNames.addAll(tag.getNames());
 		
-		Map<Integer,List<String>> paramIndexToSequence = new HashMap<Integer, List<String>>();
+		List<SymbolAndParams> res = new ArrayList<SymbolAndParams>(); 
 		
 		for (String string : sequence) {
-			if(!string.contains(".")) {
+			if(!string.contains("(") || !string.endsWith(")")) {
 				throw new IllegalArgumentException("Annotation string has an illegal format:" +string);
 			}
-			String[] split = string.split("\\.");
+			string = string.substring(0, string.length()-1);
+			String[] split = string.split("\\(");
 			if(split.length!=2) {
 				throw new IllegalArgumentException("Annotation string has an illegal format:" +string);
 			}
-			String varName = split[0];
-			String symbolName = split[1];
-		
-			if(!paramNames.contains(varName)) {
-				throw new IllegalArgumentException("Unknown parameter: "+varName);
-			}
-			if(varName.equals("this") && sootMethod.isStatic()) {
-				throw new IllegalArgumentException("cannot refer to 'this' in a static context");
+			String symbolName = split[0];
+			String varNames = split[1];
+			
+			List<String> varNamesList = new ArrayList<String>();
+			if(varNames.contains(",")) {
+				varNamesList.addAll(Arrays.asList(varNames.split(",")));
+			} else {
+				varNamesList.add(varNames);
 			}
 			
+			List<Local> params = new ArrayList<Local>();
+			
+			for (String varName : varNamesList) {
+				if(!paramNames.contains(varName)) {
+					throw new IllegalArgumentException("Unknown parameter: "+varName);
+				}
+				if(varName.equals("this") && m.isStatic()) {
+					throw new IllegalArgumentException("cannot refer to 'this' in a static context");
+				}
+				
+				int paramIndex = paramNames.indexOf(varName);
+				Body body = m.getActiveBody();
+				Local paramLocal = (!m.isStatic() && paramIndex==0) ? body.getThisLocal() : body.getParameterLocal(paramIndex);
+				
+				params.add(paramLocal);				
+			}
+			
+			res.add(new SymbolAndParams(symbolName, params));
 			//TODO validate symbol name
-			
-			int paramIndex = paramNames.indexOf(varName);
-			List<String> paramSequence = paramIndexToSequence.get(paramIndex);
-			if(paramSequence==null) {
-				paramSequence = new ArrayList<String>();
-				paramIndexToSequence.put(paramIndex, paramSequence);
-			}			
-			paramSequence.add(symbolName);
-		}
-		
-		return paramIndexToSequence;
+		}		
+		return res;
+	}
+	
+	static class SymbolAndParams {
+		protected final String symbol;
+		protected final List<Local> params;
+		public SymbolAndParams(String symbol, List<Local> params) {
+			this.symbol = symbol;
+			this.params = params;
+		}		
 	}
 
 	/**

@@ -22,9 +22,9 @@ public aspect Main {
 	}
 	
 	
-	@Precon({"i.hasNext"})
-	static void foo(Iterator i) {
-		i.next();
+	@Precon({"hasNext(it)"})
+	static void foo(Iterator it) {
+		it.next();
 	}
 
 }
