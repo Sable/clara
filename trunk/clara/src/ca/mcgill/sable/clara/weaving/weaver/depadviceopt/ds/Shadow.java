@@ -67,6 +67,7 @@ import soot.util.IdentityHashSet;
 import soot.util.queue.QueueReader;
 import abc.main.Debug;
 import abc.main.Main;
+import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
@@ -526,7 +527,6 @@ public class Shadow implements Comparable<Shadow> {
 		HasDAInfo abcExtension = (HasDAInfo) Main.v().getAbcExtension();
 		DAInfo dai = abcExtension.getDependentAdviceInfo();
 		
-		Body body = m.getActiveBody();
 		for (SymbolAndParams symbolAndParam: resolved) {
 			String symbolName = symbolAndParam.symbol;
 			
@@ -555,7 +555,7 @@ public class Shadow implements Comparable<Shadow> {
 					Position.COMPILER_GENERATED,
 					adviceFormalNameToSootLocal,
 					residueBox,
-					(Stmt)body.getUnits().getFirst(),
+					Restructure.findFirstRealStmt(m, m.getActiveBody().getUnits()),
 					false
 			);
 			shadows.add(shadow);
