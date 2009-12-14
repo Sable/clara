@@ -3,6 +3,7 @@
  */
 package ca.mcgill.sable.clara.fsanalysis.flowanalysis;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,8 +25,8 @@ public class TransitionInfo {
 			Set<Set<Integer>> liveStatesAfter, Shadow shadow,
 			Set<TransitionInfo> relatedShadowsInSameMethod,
 			Set<TransitionInfo> overlappingShadowsInOtherMethods) {		
-		this.symbol = symbol;
 		this.path = path;
+		this.symbol = symbol;
 		this.transitions = transitions;
 		this.liveStatesAfter = liveStatesAfter;
 		this.shadow = shadow;
@@ -60,11 +61,23 @@ public class TransitionInfo {
 	
 	@Override
 	public String toString() {
-		return "TransitionInfo [liveStatesAfter=" + liveStatesAfter
+		return "TransitionInfo "+shadow.getID()+" [path="+path+", liveStatesAfter=" + liveStatesAfter
 				+ ", overlappingTransitionsInOtherMethods="
-				+ overlappingTransitionsInOtherMethods
+				+ idsOf(overlappingTransitionsInOtherMethods)
 				+ ", relatedTransitionsInSameMethod="
-				+ relatedTransitionsInSameMethod + ", shadow=" + shadow
+				+ idsOf(relatedTransitionsInSameMethod) + ", shadow=" + shadow
 				+ ", symbol=" + symbol + ", transitions=" + transitions + "]";
+	}
+
+	private static String idsOf(Set<TransitionInfo> infos) {
+		StringBuilder b = new StringBuilder();
+		for (Iterator<TransitionInfo> iterator = infos.iterator(); iterator.hasNext();) {
+			TransitionInfo ti = iterator.next();
+			b.append(ti.shadow.getID());
+			if(iterator.hasNext()) b.append(",");
+		}
+		return b.toString();
 	}	
+	
+	
 }
