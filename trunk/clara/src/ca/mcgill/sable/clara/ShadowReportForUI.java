@@ -133,7 +133,9 @@ public class ShadowReportForUI {
 		worklist.add(initialStmt);
 		
 		while(!worklist.isEmpty()) {
-			Stmt stmt = worklist.iterator().next();
+			Iterator<Stmt> iterator = worklist.iterator();
+			Stmt stmt = iterator.next();
+			iterator.remove();
 			visited.add(stmt);
 			Set<Shadow> currShadows = job.enabledShadowsOfStmt(stmt);
 			boolean foundShadow = false;
