@@ -30,17 +30,7 @@ public class ResultListeners {
 	}
 
 	private ResultListeners() {
-		
-		resultListeners.add(new ResultListener() {
-			
-			@Override
-			public void showResult(Set<TransitionInfo> results) {
-				System.out.println(results);
-			}
-		});
-
-		
-	}
+ 	}
 	
 	public static void reset() { instance = null; }
 
