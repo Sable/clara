@@ -41,6 +41,7 @@ import ca.mcgill.sable.clara.fsanalysis.flowanalysis.AnalysisJob;
 import ca.mcgill.sable.clara.fsanalysis.flowanalysis.TransitionInfo;
 import ca.mcgill.sable.clara.fsanalysis.ranking.PFGs;
 import ca.mcgill.sable.clara.fsanalysis.util.ShadowsPerTMSplitter;
+import ca.mcgill.sable.clara.precon.PreconditionInference;
 import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
 import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
 import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
@@ -124,7 +125,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	        				job.tracePattern().getName()+"."+job.symbolNameForShadow(s), s.getPosition());
 	        	}
 	        }
-	        
+
 	        Set<ResultListener> resultListeners = ResultListeners.v().getResultListeners();
 			if(!resultListeners.isEmpty()) {
 		        Set<TransitionInfo> results = new HashSet<TransitionInfo>();
