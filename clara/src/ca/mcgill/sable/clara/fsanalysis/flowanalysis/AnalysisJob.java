@@ -66,6 +66,7 @@ import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Configuration.MaxConfigE
 import ca.mcgill.sable.clara.fsanalysis.mustalias.InstanceKeyNonRefLikeType;
 import ca.mcgill.sable.clara.fsanalysis.ranking.Ranking;
 import ca.mcgill.sable.clara.fsanalysis.util.SymbolNames;
+import ca.mcgill.sable.clara.precon.PreconditionInference;
 import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
 import ca.mcgill.sable.clara.weaving.aspectinfo.InvertedTracePattern;
 import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
@@ -349,6 +350,10 @@ public class AnalysisJob {
 					//but before, still print out all certain matches
 					CertainMatchAnalysis certainMatchAnalysis = new CertainMatchAnalysis(unnecessaryShadowsAnalysis);				
 					pointsOfCertainMatches.addAll(certainMatchAnalysis.pointsOfCertainMatches());
+					
+					//infer preconditions
+					PreconditionInference inference = new PreconditionInference();
+					inference.inferPreconditions(this);
 					
 					break;
 				}
