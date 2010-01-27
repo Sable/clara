@@ -31,21 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import polyglot.util.ErrorInfo;
-
-import ca.mcgill.sable.clara.HasDAInfo;
-import ca.mcgill.sable.clara.ShadowReportForUI;
-import ca.mcgill.sable.clara.fsanalysis.EnabledShadowSet;
-import ca.mcgill.sable.clara.fsanalysis.callgraph.AbstractedCallGraph;
-import ca.mcgill.sable.clara.fsanalysis.callgraph.NodePredicate;
-import ca.mcgill.sable.clara.fsanalysis.flowanalysis.AnalysisJob;
-import ca.mcgill.sable.clara.fsanalysis.flowanalysis.TransitionInfo;
-import ca.mcgill.sable.clara.fsanalysis.ranking.PFGs;
-import ca.mcgill.sable.clara.fsanalysis.util.ShadowsPerTMSplitter;
-import ca.mcgill.sable.clara.precon.PreconditionInference;
-import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
-import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
-import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
-
 import soot.MethodOrMethodContext;
 import soot.Scene;
 import soot.SootMethod;
@@ -55,6 +40,18 @@ import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.weaver.AbstractReweavingAnalysis;
+import ca.mcgill.sable.clara.HasDAInfo;
+import ca.mcgill.sable.clara.ShadowReportForUI;
+import ca.mcgill.sable.clara.fsanalysis.EnabledShadowSet;
+import ca.mcgill.sable.clara.fsanalysis.callgraph.AbstractedCallGraph;
+import ca.mcgill.sable.clara.fsanalysis.callgraph.NodePredicate;
+import ca.mcgill.sable.clara.fsanalysis.flowanalysis.AnalysisJob;
+import ca.mcgill.sable.clara.fsanalysis.flowanalysis.TransitionInfo;
+import ca.mcgill.sable.clara.fsanalysis.ranking.PFGs;
+import ca.mcgill.sable.clara.fsanalysis.util.ShadowsPerTMSplitter;
+import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
+import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
+import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
 
 /**
  * DependentAdviceIntraproceduralAnalysis: This analysis propagates TracePattern
