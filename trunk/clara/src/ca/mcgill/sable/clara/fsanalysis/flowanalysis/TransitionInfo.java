@@ -73,11 +73,19 @@ public class TransitionInfo {
 		StringBuilder b = new StringBuilder();
 		for (Iterator<TransitionInfo> iterator = infos.iterator(); iterator.hasNext();) {
 			TransitionInfo ti = iterator.next();
-			b.append(ti.shadow.getID());
+			Shadow s = ti.shadow;
+			if(s!=null)
+				b.append(s.getID());
+			else
+				b.append("ID not set yet");
 			if(iterator.hasNext()) b.append(",");
 		}
 		return b.toString();
 	}	
+	
+	public int getShadowId() {
+		return shadow.getID();
+	}
 	
 	
 }
