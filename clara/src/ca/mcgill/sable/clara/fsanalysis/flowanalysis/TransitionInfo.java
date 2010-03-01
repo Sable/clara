@@ -87,5 +87,15 @@ public class TransitionInfo {
 		return shadow.getID();
 	}
 	
+	public String getContainerMethodName() {
+		return shadow.getContainer().getName();
+	}
 	
+	public String getContainerClassName() {
+		return shadow.getContainer().getDeclaringClass().getName();
+	}
+	
+	public String getContainerMethodSignature() {
+		return shadow.getContainer().getSignature();
+	}
 }
