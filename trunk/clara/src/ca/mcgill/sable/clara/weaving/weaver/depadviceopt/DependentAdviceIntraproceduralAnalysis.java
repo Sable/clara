@@ -261,7 +261,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
              */
             for (SootMethod m : methodToEnabledTMShadows.keySet()) {
             	Set<Shadow> shadowsInMethod = methodToEnabledTMShadows.get(m);
-                if(shadowsInMethod.isEmpty()) return; //no active shadows any more
+                if(shadowsInMethod.isEmpty()) continue; //no active shadows any more
                 
                 if(Debug.v().debugDA)
                 	System.err.println("Analyzing: "+m+" on TracePattern: "+tm.getName());
