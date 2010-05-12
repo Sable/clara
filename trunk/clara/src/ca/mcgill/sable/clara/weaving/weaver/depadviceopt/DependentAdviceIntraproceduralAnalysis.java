@@ -65,8 +65,8 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	protected long maxTime, averageTime, totalTime;
 	protected int analysisCount;
 	
-	protected Map<SootMethod,AnalysisJob> methodToJob = new HashMap<SootMethod, AnalysisJob>();
-
+	protected Map<SootMethod,Map<TracePattern,AnalysisJob>> methodToTracePatternToJob = new HashMap<SootMethod, Map<TracePattern,AnalysisJob>>();
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -116,7 +116,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	        	//we iterate until no shadows are disabled any more
 	        } while(!enabledShadowsBeforeIteration.equals(enabledShadowsAfterIteration));
 
-	        for(AnalysisJob job: methodToJob.values()) {
+	        for(AnalysisJob job: allJobs()) {
 	        	for(Shadow s: job.pointsOfCertainMatches()) {
 	        		Main.v().getAbcExtension().forceReportError(ErrorInfo.WARNING, "Detected certain match: "+
 	        				job.tracePattern().getName()+"."+job.symbolNameForShadow(s), s.getPosition());
@@ -129,7 +129,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 		        ShadowReportForUI shadowReport = abcExtension.getDependentAdviceInfo().shadowReport();
 		        shadowReport.initialize(enabledShadowsAfterIteration);
 		        
-		        for(AnalysisJob job: methodToJob.values()) {
+		        for(AnalysisJob job: allJobs()) {
 		    		results.addAll(shadowReport.computeResultsForJob(job));
 		        }
 		        
@@ -146,6 +146,16 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 			abcExtension.getDependentAdviceInfo().resetAnalysisDataStructures();
 		}
 		return false;
+	}
+
+
+
+	private Set<AnalysisJob> allJobs() {
+		Set<AnalysisJob> jobs = new HashSet<AnalysisJob>();
+		for(Map<TracePattern,AnalysisJob> tpToJob: methodToTracePatternToJob.values()) {
+			jobs.addAll(tpToJob.values());
+		}
+		return jobs;
 	}
 
 
@@ -231,9 +241,9 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 		 */
 		Map<TracePattern,Set<Shadow>> tmToShadows = ShadowsPerTMSplitter.splitSymbolShadows(shadows);
 		
-        for (TracePattern tm : (Collection<TracePattern>)gai.getDependentAdviceInfo().getTracePatterns()) {
+        for (TracePattern tp : (Collection<TracePattern>)gai.getDependentAdviceInfo().getTracePatterns()) {
             
-        	Set<Shadow> thisTMsShadows = tmToShadows.get(tm);
+        	Set<Shadow> thisTMsShadows = tmToShadows.get(tp);
         	if(thisTMsShadows==null) {
         	    //no shadows left
         	    continue;
@@ -264,17 +274,23 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
                 if(shadowsInMethod.isEmpty()) continue; //no active shadows any more
                 
                 if(Debug.v().debugDA)
-                	System.err.println("Analyzing: "+m+" on TracePattern: "+tm.getName());
+                	System.err.println("Analyzing: "+m+" on TracePattern: "+tp.getName());
                 
                 long before = System.currentTimeMillis();
 
-                AnalysisJob job = methodToJob.get(m);
+                Map<TracePattern, AnalysisJob> tpToJob = methodToTracePatternToJob.get(m);
+                if(tpToJob==null) {
+                	tpToJob = new HashMap<TracePattern, AnalysisJob>();
+                	methodToTracePatternToJob.put(m, tpToJob);
+                }
+                
+                AnalysisJob job = tpToJob.get(tp);
                 if(job==null) {
                     /*
                      * Set up supporting analyses.
                      */
-                	job = new AnalysisJob(m,tm,shadowsInMethod,cg,methodToEnabledTMShadows);
-                	methodToJob.put(m, job);
+                	job = new AnalysisJob(m,tp,shadowsInMethod,cg,methodToEnabledTMShadows);
+                	tpToJob.put(tp, job);
                 }
 
                 /*
@@ -285,7 +301,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
                 long duration = System.currentTimeMillis()-before;
 
                 if(Debug.v().debugDA) {
-                	System.err.println("Done analyzing: "+m+" on TracePattern: "+tm.getName());
+                	System.err.println("Done analyzing: "+m+" on TracePattern: "+tp.getName());
 					System.err.println("Analysis took: "+duration);
                 }
                 
@@ -296,7 +312,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 		}
         averageTime = Math.round(totalTime / (analysisCount+0.0));
         
-        for(AnalysisJob job: methodToJob.values()) {
+        for(AnalysisJob job: allJobs()) {
         	job.dump();        	
         }
         
@@ -311,7 +327,7 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
     
     @Override
     public void cleanup() {
-    	methodToJob = null;
+    	methodToTracePatternToJob = null;
     }
 
 }
