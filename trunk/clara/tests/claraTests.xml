@@ -155,7 +155,7 @@
 
    <ajc-test num="1302" dir="tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-insensitive stage">
-        <compile files="FlowIns.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FlowIns.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="12"/>
 	    	<message kind="warning" line="13"/>
 		</compile>
@@ -164,7 +164,7 @@
     		    		
     <ajc-test num="1303" dir="tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-insensitive stage, test 2">
-        <compile files="FlowIns2.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FlowIns2.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="20"/>
 	    	<message kind="warning" line="21"/>
 		</compile>
@@ -172,7 +172,7 @@
     
     <ajc-test num="1304" dir="tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1">
-        <compile files="IntraFlowSens1.java,AB.java,AbstractTest.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="IntraFlowSens1.java,AB.java,AbstractTest.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="41"/>
 	    	<message kind="warning" line="43"/>
 	    	<message kind="warning" line="48"/>
@@ -187,7 +187,7 @@
     
     <ajc-test num="1305" dir="tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test2">
-        <compile files="IntraFlowSens2.java,AB.java,AbstractTest.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="IntraFlowSens2.java,AB.java,AbstractTest.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="11"/>
 	    	<message kind="warning" line="13"/>
 		</compile>
@@ -195,7 +195,7 @@
     
     <ajc-test num="1306" dir="tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test3">
-        <compile files="IntraFlowSens3.java,AB.java,AbstractTest.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="IntraFlowSens3.java,AB.java,AbstractTest.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="13"/>
 	    	<message kind="warning" line="15"/>
 	    	<message kind="warning" line="27"/>
@@ -205,14 +205,14 @@
     
     <ajc-test num="1307" dir="tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test4 (tainting)">
-        <compile files="IntraFlowSens4.java,AB.java,AbstractTest.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="IntraFlowSens4.java,AB.java,AbstractTest.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="9"/>
 		</compile>
     </ajc-test>
 
     <ajc-test num="1308" dir="tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, FailSafeIterFI">
-        <compile files="FailSafeIterFI.java" options="-ext,ca.mcgill.sable.clara.tm,-w,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FailSafeIterFI.java" options="-ext,ca.mcgill.sable.clara.tm,-w,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="38"/>
 	    	<message kind="warning" line="39"/>
 	    	<message kind="warning" line="40"/>
@@ -302,7 +302,7 @@
         
     <ajc-test num="1431" dir="da/optimizations"
         title="Flow-insensitive optimization for dependent advice">
-        <compile files="FlowIns.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FlowIns.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="11"/>
 	    	<message kind="warning" line="13"/>
 		</compile>
@@ -311,7 +311,7 @@
 
     <ajc-test num="1432" dir="da/optimizations"
         title="Flow-sensitive optimization for dependent advice">
-        <compile files="FlowSens.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FlowSens.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="43"/>
 	    	<message kind="warning" line="44"/>
 	    	<message kind="warning" line="50"/>
@@ -331,7 +331,7 @@
 
     <ajc-test num="1433" dir="da/optimizations"
         title="Flow-sensitive optimization for dependent advice (2)">
-        <compile files="FlowSens2.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FlowSens2.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="30"/>
 	    	<message kind="warning" line="31"/>
 	    	<message kind="warning" line="34"/>
@@ -351,7 +351,7 @@
 
     <ajc-test num="1434" dir="da/optimizations"
         title="Flow-sensitive optimization for dependent advice (3)">
-        <compile files="FlowSens3.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-soot">
+        <compile files="FlowSens3.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="10"/>
 	    	<message kind="warning" line="11"/>
 		</compile>
@@ -359,7 +359,7 @@
 
     <ajc-test num="1440" dir="da/optimizations/mop"
         title="Flow-insensitive optimization for dependent advice">
-        <compile files="HasNext.java,Test.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa+soot,-soot">
+        <compile files="HasNext.java,Test.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa,">
 	    	<message kind="warning" line="79"/>
 		</compile>
         <run class="Test"/>
@@ -367,7 +367,7 @@
 
     <ajc-test num="1500" dir="da/annotation"
         title="Precon annotation">
-        <compile files="Main.java,Precon.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa+soot,-pp,-soot">
+        <compile files="Main.java,Precon.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa,+soot,-pp,+soot,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="27"/>
 		</compile>
     </ajc-test>
