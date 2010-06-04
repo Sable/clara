@@ -43,6 +43,7 @@ import abc.main.AbcExtension;
 import abc.main.AbcTimer;
 import abc.main.CompilerFailedException;
 import abc.main.Debug;
+import abc.main.Main;
 import abc.main.options.OptionsParser;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -56,6 +57,7 @@ import ca.mcgill.sable.clara.jrag.JavaParser;
 import ca.mcgill.sable.clara.jrag.Options;
 import ca.mcgill.sable.clara.jrag.Problem;
 import ca.mcgill.sable.clara.jrag.Program;
+import ca.mcgill.sable.clara.weaving.aspectinfo.DAInfo;
 
 public class CompileSequence extends abc.ja.eaj.CompileSequence {
   public CompileSequence(AbcExtension ext) {
@@ -186,6 +188,11 @@ public class CompileSequence extends abc.ja.eaj.CompileSequence {
       abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().print(System.err);
     
     Scene.v().loadDynamicClasses();
+
+	final DAInfo dai = ((HasDAInfo) Main.v().getAbcExtension()).getDependentAdviceInfo();
+	//perform "type checks" in the back-end (for dependencies that were added as aspect-info
+	if(!dai.consistencyCheckForDependentAdvice())
+		throw new CompilerFailedException("There were semantic errors in the definition of dependent advice.");
   }
 	
   public void weave() throws CompilerFailedException {
