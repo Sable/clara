@@ -98,7 +98,8 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	        do {
 	        	//the shadows enabled before this iterations are the ones that remained enabled after the last one
 	        	enabledShadowsBeforeIteration = enabledShadowsAfterIteration;
-		        System.err.println("da:    DA-Shadows enabled before FlowSens iteration "+iteration+": "+enabledShadowsBeforeIteration.size());		        
+		        if(Debug.v().debugDA)
+		        	System.err.println("da:    DA-Shadows enabled before FlowSens iteration "+iteration+": "+enabledShadowsBeforeIteration.size());		        
 	        	
 		        //do the work...
 		        oneIteration(enabledShadowsBeforeIteration,cg,traceFile);
@@ -141,7 +142,8 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 			if(Debug.v().outputPFGs)
 				PFGs.v().dump("after flow-sensitive stage", enabledShadowsAfterIteration, false);
 	        
-	        System.err.println("da:    DA-Shadows enabled after last FlowSens iteration: "+enabledShadowsAfterIteration.size());
+	        if(Debug.v().debugDA)
+	        	System.err.println("da:    DA-Shadows enabled after last FlowSens iteration: "+enabledShadowsAfterIteration.size());
 		} finally {
 			abcExtension.getDependentAdviceInfo().resetAnalysisDataStructures();
 		}
@@ -311,15 +313,17 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	        }
 		}
         averageTime = Math.round(totalTime / (analysisCount+0.0));
+
+        if(Debug.v().debugDA) {
+	        for(AnalysisJob job: allJobs()) {
+	        	job.dump();        	
+	        }
         
-        for(AnalysisJob job: allJobs()) {
-        	job.dump();        	
+	        System.err.println("Number of analysis runs: "+analysisCount);
+	        System.err.println("Maximal analysis time:   "+maxTime);
+	        System.err.println("Average analysis time:   "+averageTime);
+	        System.err.println("Total analysis time:     "+totalTime);
         }
-        
-        System.err.println("Number of analysis runs: "+analysisCount);
-        System.err.println("Maximal analysis time:   "+maxTime);
-        System.err.println("Average analysis time:   "+averageTime);
-        System.err.println("Total analysis time:     "+totalTime);
         
         //perform flow-insensitive analysis again
         AdviceDependency.disableShadowsWithNoStrongSupportByAnyGroup(shadows);
