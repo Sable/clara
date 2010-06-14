@@ -105,7 +105,8 @@ aspect DependentAdviceCodegen {
 		ca.mcgill.sable.clara.weaving.aspectinfo.DAInfo dai =
 			((ca.mcgill.sable.clara.HasDAInfo) abc.main.Main.v().getAbcExtension()).getDependentAdviceInfo();
 
-		dai.registerDependentAdvice(qualifiedLowLevelAdviceName,qualifiedUserGivenAdviceName);
+		if(getModifiers().hasDependent())
+			dai.registerDependentAdvice(qualifiedLowLevelAdviceName,qualifiedUserGivenAdviceName);
 	}
 
 	syn Map<String,java.util.List<String>> AdviceDependency.strongAdviceToVars() {
