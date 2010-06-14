@@ -351,9 +351,9 @@ public class AnalysisJob {
 					CertainMatchAnalysis certainMatchAnalysis = new CertainMatchAnalysis(unnecessaryShadowsAnalysis);				
 					pointsOfCertainMatches.addAll(certainMatchAnalysis.pointsOfCertainMatches());
 					
-					//infer preconditions
-					PreconditionInference inference = new PreconditionInference();
-					inference.inferPreconditions(this);
+//					//infer preconditions
+//					PreconditionInference inference = new PreconditionInference();
+//					inference.inferPreconditions(this);
 					
 					break;
 				}
@@ -560,7 +560,7 @@ public class AnalysisJob {
 
 	public void warn(Shadow s, String reason) {	
 		Main.v().getAbcExtension().forceReportError(ErrorInfo.WARNING, "Shadow was disabled because it is unnecessary ("+reason+"): "+
-				tracePattern().getName()+"."+symbolNameForShadow(s), s.getPosition());
+				tracePattern().getContainer().getName()+"."+tracePattern().getName()+"."+symbolNameForShadow(s), s.getPosition());
 	}
 
 	/**
