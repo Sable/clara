@@ -99,7 +99,7 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
     /**
      * @inheritDoc
      */
-    public ExtensionInfo makeExtensionInfo(Collection<String> jar_classes, Collection<String> aspect_sources) {
+    public ExtensionInfo makeExtensionInfo(Collection jar_classes, Collection aspect_sources) {
         return new ExtensionInfo(jar_classes, aspect_sources);
     }
 
