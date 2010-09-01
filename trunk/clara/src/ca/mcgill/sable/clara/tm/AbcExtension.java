@@ -125,9 +125,16 @@ public class AbcExtension extends abc.tm.AbcExtension implements HasDAInfo
 	};
 
 	public AbcExtension() {
+		if(!OptionsParser.v().static_analyses().isEmpty() && !OptionsParser.v().static_analyses().toLowerCase().equals("quick")) {
+			//enable whole-program mode if we have any other stage but "quick"
+			OptionsParser.v().set_w(true);
+		}
+
 		//if this extension is enabled, we want to warn the user about each individual shadow being removed
 		//by abc.da, and not just summary information
 		OptionsParser.v().set_warn_about_individual_shadows(true);
+		
+		Debug.v().dontCheckExceptions = true;
 	}
 
     public void collectVersions(StringBuffer versions)

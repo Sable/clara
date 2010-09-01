@@ -73,9 +73,10 @@ public class AbcExtension extends abc.ja.eaj.AbcExtension implements HasDAInfo
 
 	public AbcExtension() {
 		if(!OptionsParser.v().static_analyses().isEmpty() && !OptionsParser.v().static_analyses().toLowerCase().equals("quick")) {
-			//enable whole-program mode if we have anoy other stage but "quick"
+			//enable whole-program mode if we have any other stage but "quick"
 			OptionsParser.v().set_w(true);
 		}
+		Debug.v().dontCheckExceptions = true;
 	}
 	
 	/**
