@@ -21,6 +21,10 @@
  */
 package ca.mcgill.sable.clara.fsanalysis.ranking;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -31,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import soot.Scene;
 import soot.SootMethod;
 import abc.main.Main;
 import ca.mcgill.sable.clara.HasDAInfo;
@@ -41,6 +46,8 @@ import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
 import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
 
 public class PFGs {
+
+	private boolean removeIfExists = false;
 
 	public void dump(String message, Set<Shadow> inShadows, boolean numberOnly) {
 		Set<Shadow> shadows = new HashSet<Shadow>(inShadows);
@@ -106,24 +113,48 @@ public class PFGs {
 				pfgs.add(new Ranking.PotentialFailureGroup(groupPPFs, rank,  groupFeatures, contextShadows, tp));
 			}
 			Collections.sort(pfgs);
-			System.err.println("Number of methods with enabled shadows "+message+": "+methods.size());
-			System.err.println("Number of potential failure groups "+message+": "+pfgs.size());
-			if(!numberOnly) {
-				System.err.println();
-				System.err.println();
-				System.err.println();
-				System.err.println();
-				System.err.println();
-				for (Ranking.PotentialFailureGroup potentialFailureGroup : pfgs) {
-					System.err.println(potentialFailureGroup);
-					System.err.println();
-					System.err.println();
-				}
-				System.err.println();
-				System.err.println();
-				System.err.println();
-				System.err.println();
+			
+			//print it all
+			
+			//build qualified tracematch name
+			String tmName = tp.getContainerClass().getShortName();
+			tmName += "." + tp.getName();
+
+			String bmName = Scene.v().getMainClass().getName();
+			String fileName = bmName+"-"+tmName+".pfg";
+			if(removeIfExists ) {
+				new File(fileName).delete();
 			}
+			
+			try {
+				PrintWriter out = new PrintWriter(new FileOutputStream(fileName,true));
+
+				out.println("Number of methods with enabled shadows "+message+": "+methods.size());
+				out.println("Number of potential failure groups "+message+": "+pfgs.size());
+				if(!numberOnly) {
+					out.println();
+					out.println();
+					out.println();
+					out.println();
+					out.println();
+					for (Ranking.PotentialFailureGroup potentialFailureGroup : pfgs) {
+						out.println(potentialFailureGroup);
+						out.println();
+						out.println();
+					}
+					out.println();
+					out.println();
+					out.println();
+					out.println();
+				}
+				
+				out.close();
+				
+				removeIfExists = true;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+
 		}
 	}	
 
