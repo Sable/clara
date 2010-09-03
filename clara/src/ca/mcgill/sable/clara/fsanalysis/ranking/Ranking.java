@@ -89,7 +89,7 @@ public class Ranking {
 			this.overlaps = overlaps;
 		}
 		
-				public int compareTo(PotentialFailureGroup o) {
+		public int compareTo(PotentialFailureGroup o) {
 			return (o.rank - rank)<0?-1:1;
 		}
 		
