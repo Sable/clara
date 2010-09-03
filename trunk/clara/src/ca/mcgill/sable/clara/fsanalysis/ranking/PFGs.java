@@ -31,18 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import soot.SootMethod;
+import abc.main.Main;
 import ca.mcgill.sable.clara.HasDAInfo;
 import ca.mcgill.sable.clara.fsanalysis.ranking.Ranking.Features;
 import ca.mcgill.sable.clara.fsanalysis.util.ShadowsPerTMSplitter;
 import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
 import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
 import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
-
-import soot.SootMethod;
-import ca.mcgill.sable.clara.fsanalysis.ranking.PFGs;
-import ca.mcgill.sable.clara.fsanalysis.ranking.Ranking;
-import abc.main.Main;
-import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
 
 public class PFGs {
 
@@ -52,7 +48,7 @@ public class PFGs {
 		//remove all non-symbol shadows and all disabled shadows
 		for (Iterator<Shadow> iter = shadows.iterator(); iter.hasNext();) {
 			Shadow s = iter.next();
-			if(!s.isEnabled() || !(s.getAdviceDecl() instanceof PerSymbolTMAdviceDecl)) {
+			if(!s.isEnabled()) {
 				iter.remove();
 			}
 		}
@@ -153,7 +149,7 @@ public class PFGs {
     	}
         Set<Shadow> allShadows = new HashSet<Shadow>(shadows);
         for (Shadow s : allShadows) {
-			if(s.isEnabled() && (s.getAdviceDecl() instanceof PerSymbolTMAdviceDecl)) {
+			if(s.isEnabled()) {
 				SootMethod adviceMethod = s.getAdviceDecl().getImpl().getSootMethod();
 				String symbol = adviceMethodToSymbol.get(adviceMethod);
 				assert symbol!=null;

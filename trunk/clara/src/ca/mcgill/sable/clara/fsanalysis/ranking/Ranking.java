@@ -22,26 +22,20 @@
 package ca.mcgill.sable.clara.fsanalysis.ranking;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
-import ca.mcgill.sable.clara.fsanalysis.util.SymbolNames;
-import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
-import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
-import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
 
 import polyglot.util.Position;
 import soot.Scene;
 import soot.SootMethod;
-import ca.mcgill.sable.clara.fsanalysis.ranking.Ranking;
-import abc.tm.weaving.aspectinfo.PerSymbolTMAdviceDecl;
+import ca.mcgill.sable.clara.fsanalysis.util.SymbolNames;
+import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
+import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
 
 /**
  * This class produces a ranked list of potential points of failure from a given set of shadows.
