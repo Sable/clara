@@ -48,7 +48,7 @@ import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
 public class Ranking {
 	
 	/**
-	 * Those are the current features we expose for ranking and filtering. 
+	 * Those are all features that we once used for ranking and filtering. 
 	 */
 	enum Features {
 		ANALYSIS_ABORTED,		
@@ -60,6 +60,9 @@ public class Ranking {
 		OVERLAPS,
 	};
 	
+	/**
+	 * Those are the current features we expose for ranking and filtering. 
+	 */
 	public static Features[] pPFFeatures = new Features[] {
 		Features.ANALYSIS_ABORTED,
 		Features.DELEGATE,
