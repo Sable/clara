@@ -117,12 +117,21 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
 	        	//we iterate until no shadows are disabled any more
 	        } while(!enabledShadowsBeforeIteration.equals(enabledShadowsAfterIteration));
 
+	        if(Debug.v().debugDA)
+	        	System.err.println("da:    Results of Certain-Match Analysis follow.");
+	        
 	        for(AnalysisJob job: allJobs()) {
 	        	for(Shadow s: job.pointsOfCertainMatches()) {
-	        		Main.v().getAbcExtension().forceReportError(ErrorInfo.WARNING, "Detected certain match: "+
+	    	        if(Debug.v().debugDA)
+	    	        	System.err.println("Following cetain match is in Method: " + s.getContainer().getSignature());
+	    	        	
+	    	        Main.v().getAbcExtension().forceReportError(ErrorInfo.WARNING, "Detected certain match: "+
 	        				job.tracePattern().getName()+"."+job.symbolNameForShadow(s), s.getPosition());
 	        	}
 	        }
+
+	        if(Debug.v().debugDA)
+	        	System.err.println("da:    Done with results of Certain-Match Analysis.");
 
 	        Set<ResultListener> resultListeners = ResultListeners.v().getResultListeners();
 			if(!resultListeners.isEmpty()) {
