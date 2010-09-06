@@ -315,9 +315,9 @@ public class DependentAdviceIntraproceduralAnalysis extends AbstractReweavingAna
         averageTime = Math.round(totalTime / (analysisCount+0.0));
 
         if(Debug.v().debugDA) {
-	        for(AnalysisJob job: allJobs()) {
-	        	job.dump();        	
-	        }
+//	        for(AnalysisJob job: allJobs()) {
+//	        	job.dump();        	
+//	        }
         
 	        System.err.println("Number of analysis runs: "+analysisCount);
 	        System.err.println("Maximal analysis time:   "+maxTime);
