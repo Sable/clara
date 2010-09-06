@@ -41,11 +41,12 @@ public class CertainMatchAnalysis {
 			boolean leadsToFinal = false;
 			
 			Set<Integer> statesBeforeTransition = unnecessaryShadowsAnalysis.statesBeforeTransition(s);
+			
 			for (Integer stateNum : statesBeforeTransition) {
 				SMNode stateByNumber = unnecessaryShadowsAnalysis.job.tracePattern().getStateMachine().getStateByNumber(stateNum);
 				for (Iterator<SMEdge> outEdgeIter=stateByNumber.getOutEdgeIterator(); outEdgeIter.hasNext();) {
 					SMEdge outEdge = outEdgeIter.next();
-					if(!outEdge.isSkipEdge()) {
+					if(!outEdge.isSkipEdge() && outEdge.getLabel().equals(unnecessaryShadowsAnalysis.job.symbolNameForShadow(s))) {
 						if(outEdge.getTarget().isFinalNode()) {
 							leadsToFinal = true;
 						} else {
