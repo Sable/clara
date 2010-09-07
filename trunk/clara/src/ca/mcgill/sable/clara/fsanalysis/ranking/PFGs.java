@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import soot.Scene;
 import soot.SootMethod;
 import abc.main.Main;
 import ca.mcgill.sable.clara.HasDAInfo;
