@@ -120,8 +120,7 @@ public class PFGs {
 			String tmName = tp.getContainerClass().getShortName();
 			tmName += "." + tp.getName();
 
-			String bmName = Scene.v().getMainClass().getName();
-			String fileName = bmName+"-"+tmName+".pfg";
+			String fileName = tmName+".pfg";
 			if(removeIfExists ) {
 				new File(fileName).delete();
 			}
