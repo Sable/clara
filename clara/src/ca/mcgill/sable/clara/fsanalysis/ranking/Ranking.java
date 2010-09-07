@@ -68,6 +68,7 @@ public class Ranking {
 		Features.DELEGATE,
 		Features.DYNAMIC_LOADING,
 		Features.NO_CONTEXT,
+		Features.CALL,		
 	}; 
 	
 	/**
@@ -220,6 +221,8 @@ public class Ranking {
 				features.add(Features.DELEGATE);
 			if(s.notAllPointsToSetsContextSensitive())
 				features.add(Features.NO_CONTEXT);
+			if(methodsWithOverlappingCalls.contains(s.getContainer()))
+				features.add(Features.CALL);
 			if(methodsWithCutOffAnalysis.contains(s.getContainer()))
 				features.add(Features.ANALYSIS_ABORTED);
 			return features;
@@ -286,10 +289,16 @@ public class Ranking {
 	
 	protected static Set<SootMethod> methodsWithCutOffAnalysis = new HashSet<SootMethod>();
 	
+	protected static Set<SootMethod> methodsWithOverlappingCalls = new HashSet<SootMethod>();
+
 	public void addMethodWithCutOffComputation(SootMethod m) {
 		methodsWithCutOffAnalysis.add(m);
 	}
 	
+	public void addMethodWithOverlappingCalls(SootMethod m) {
+		methodsWithOverlappingCalls.add(m);
+	}
+
 	//singleton pattern
 	
 	protected static Ranking instance;
@@ -309,6 +318,7 @@ public class Ranking {
 	public static void reset() {
 		instance = null;
 		methodsWithCutOffAnalysis.clear();
+		methodsWithOverlappingCalls.clear();
 	}
 
 }

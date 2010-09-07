@@ -37,8 +37,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import polyglot.util.ErrorInfo;
 import soot.Local;
@@ -61,12 +61,11 @@ import abc.tm.weaving.matching.SMNode;
 import ca.mcgill.sable.clara.fsanalysis.EnabledShadowSet;
 import ca.mcgill.sable.clara.fsanalysis.callgraph.AbstractedCallGraph;
 import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Configuration;
-import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Disjunct;
 import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Configuration.MaxConfigException;
+import ca.mcgill.sable.clara.fsanalysis.flowanalysis.ds.Disjunct;
 import ca.mcgill.sable.clara.fsanalysis.mustalias.InstanceKeyNonRefLikeType;
 import ca.mcgill.sable.clara.fsanalysis.ranking.Ranking;
 import ca.mcgill.sable.clara.fsanalysis.util.SymbolNames;
-import ca.mcgill.sable.clara.precon.PreconditionInference;
 import ca.mcgill.sable.clara.weaving.aspectinfo.AdviceDependency;
 import ca.mcgill.sable.clara.weaving.aspectinfo.InvertedTracePattern;
 import ca.mcgill.sable.clara.weaving.aspectinfo.TracePattern;
@@ -578,12 +577,16 @@ public class AnalysisJob {
 	        	Set<Shadow> enabledTMShadowsOf = enabledTMShadowsOf(method);
 	        	for (Shadow shadow : enabledTMShadowsOf) {
 					shadows.add(shadow);
-				}
-	        	
+				}	        	
 	        }
 	        
 	        //we are only interested in shadows that overlap
 	        shadows.retainAll(enabledOverlappingSymbolShadowsFromOtherMethods());
+	        
+	        if(!shadows.isEmpty()) {
+	        	Ranking.v().addMethodWithOverlappingCalls(method());
+	        }
+	        
 			transitivelyCalledShadows.put(s,shadows);
 		}
         return shadows;
