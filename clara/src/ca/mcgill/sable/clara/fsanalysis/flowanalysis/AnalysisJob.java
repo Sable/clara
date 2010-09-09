@@ -185,6 +185,10 @@ public class AnalysisJob {
         }        
         this.overlappingSymbolShadows = new EnabledShadowSet(overlappingShadows);
         
+        if(!this.overlappingSymbolShadows.isEmpty()) {
+        	Ranking.v().addMethodWithOverlappingCalls(method());
+        }
+        
         ExceptionalUnitGraph ug = new ExceptionalUnitGraph(m.getActiveBody());
 		
 		this.localMustAliasAnalysis = new LocalMustAliasAnalysis(ug,true);
@@ -369,6 +373,7 @@ public class AnalysisJob {
 	}
 
 
+	@SuppressWarnings("unused")
 	private void appendToTraceFile(Set<Shadow> shadowsBefore,
 			ReachingStatesAnalysis forwardAnalysis,
 			ReachingStatesAnalysis backwardAnalysis, File traceFile) {
@@ -582,10 +587,6 @@ public class AnalysisJob {
 	        
 	        //we are only interested in shadows that overlap
 	        shadows.retainAll(enabledOverlappingSymbolShadowsFromOtherMethods());
-	        
-	        if(!shadows.isEmpty()) {
-	        	Ranking.v().addMethodWithOverlappingCalls(method());
-	        }
 	        
 			transitivelyCalledShadows.put(s,shadows);
 		}
