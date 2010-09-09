@@ -46,7 +46,7 @@ import ca.mcgill.sable.clara.weaving.weaver.depadviceopt.ds.Shadow;
 
 public class PFGs {
 
-	private boolean removeIfExists = false;
+	private boolean removeIfExists = true;
 
 	public void dump(String message, Set<Shadow> inShadows, boolean numberOnly) {
 		Set<Shadow> shadows = new HashSet<Shadow>(inShadows);
@@ -120,7 +120,7 @@ public class PFGs {
 			tmName += "." + tp.getName();
 
 			String fileName = tmName+".pfg";
-			if(removeIfExists ) {
+			if(removeIfExists) {
 				new File(fileName).delete();
 			}
 			
@@ -148,7 +148,7 @@ public class PFGs {
 				
 				out.close();
 				
-				removeIfExists = true;
+				removeIfExists = false;
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
