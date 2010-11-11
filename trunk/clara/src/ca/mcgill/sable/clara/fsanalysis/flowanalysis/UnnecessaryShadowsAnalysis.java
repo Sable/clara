@@ -65,7 +65,7 @@ public class UnnecessaryShadowsAnalysis {
 		
 		nextShadow:
 		for (Shadow shadow : sortedList) {
-			Stmt stmt = shadow.getAdviceBodyInvokeStmt();
+			Stmt stmt = shadow.getStmtToAttachTo();
 			ConfigurationSet beforeFlow = forwardAnalysis.getFlowBefore(stmt);
 			Set<Configuration> configsBefore = new HashSet<Configuration>(beforeFlow.getConfigurations());
 			
@@ -142,7 +142,7 @@ public class UnnecessaryShadowsAnalysis {
 	}
 
 	private Set<Set<Integer>> liveStatesSetsAfterShadow(Shadow shadow, Disjunct shadowDisjunct) {
-		Stmt stmt = shadow.getAdviceBodyInvokeStmt();
+		Stmt stmt = shadow.getStmtToAttachTo();
 		ConfigurationSet dualInfo = backwardsAnalysis.getFlowBefore(stmt);
 		Set<Set<Integer>> res = new HashSet<Set<Integer>>();
 		for (Configuration config : dualInfo.getConfigurations()) {
@@ -186,7 +186,7 @@ public class UnnecessaryShadowsAnalysis {
 	}
 	
 	public Set<Integer> statesBeforeTransition(Shadow shadow) {
-		Stmt stmt = shadow.getAdviceBodyInvokeStmt();
+		Stmt stmt = shadow.getStmtToAttachTo();
 		ConfigurationSet beforeFlow = forwardAnalysis.getFlowBefore(stmt);
 		Set<Configuration> configsBefore = new HashSet<Configuration>(beforeFlow.getConfigurations());
 		
@@ -205,7 +205,7 @@ public class UnnecessaryShadowsAnalysis {
 	}
 	
 	public Set<Set<Integer>> liveStatesSetsAfterTransition(Shadow shadow) {
-		Stmt stmt = shadow.getAdviceBodyInvokeStmt();
+		Stmt stmt = shadow.getStmtToAttachTo();
 		Map<String, Set<InstanceKey>> shadowBinding = job.shadowBindings(shadow);
 		Disjunct shadowDisjunct = Disjunct.TRUE.addBindingsForSymbol(shadowBinding);
 
@@ -224,7 +224,7 @@ public class UnnecessaryShadowsAnalysis {
 	}
 	
 	public Map<Integer,Set<Integer>> transitions(Shadow shadow) {
-		Stmt stmt = shadow.getAdviceBodyInvokeStmt();
+		Stmt stmt = shadow.getStmtToAttachTo();
 		ConfigurationSet beforeFlow = forwardAnalysis.getFlowBefore(stmt);
 		Set<Configuration> configsBefore = new HashSet<Configuration>(beforeFlow.getConfigurations());
 		

@@ -133,11 +133,12 @@ public class AnalysisJob {
 		//initialize stmtToShadows
         Map<Stmt, Set<Shadow>> stmtToShadows = new HashMap<Stmt, Set<Shadow>>();
         for (Shadow shadow : shadowsForMethodAndTracePattern) {
-        	if(stmtToShadows.containsKey(shadow.getAdviceBodyInvokeStmt())) {
-        		throw new RuntimeException("Multiple shadows invoked at same statement!?");
-        	}                	
-        	Set<Shadow> singleton = new EnabledShadowSet(Collections.singleton(shadow));
-			stmtToShadows.put(shadow.getAdviceBodyInvokeStmt(),singleton);
+        	Set<Shadow> shadows = stmtToShadows.get(shadow.getStmtToAttachTo());
+        	if(shadows == null) {
+        		shadows = new EnabledShadowSet();
+        		stmtToShadows.put(shadow.getStmtToAttachTo(), shadows);
+        	}
+        	shadows.add(shadow);
 		}
         //for all other units, store empty set
         for(Unit u: m.getActiveBody().getUnits()) {
@@ -400,7 +401,7 @@ public class AnalysisJob {
 				
 				Set<SMNode> statesBefore = new LinkedHashSet<SMNode>();
 				{
-					ConfigurationSet flowBefore = forwardAnalysis.getFlowBefore(shadow.getAdviceBodyInvokeStmt());
+					ConfigurationSet flowBefore = forwardAnalysis.getFlowBefore(shadow.getStmtToAttachTo());
 					for (Configuration config : flowBefore.getConfigurations()) {
 						if(config.getBinding().isCompatibleTo(shadowDisjunct)) {
 							statesBefore.addAll(config.getStates());
@@ -422,7 +423,7 @@ public class AnalysisJob {
 				
 				Set<SMNode> statesAfter = new LinkedHashSet<SMNode>();
 				{
-					ConfigurationSet flowAfter = backwardAnalysis.getFlowBefore(shadow.getAdviceBodyInvokeStmt());
+					ConfigurationSet flowAfter = backwardAnalysis.getFlowBefore(shadow.getStmtToAttachTo());
 					for (Configuration config : flowAfter.getConfigurations()) {
 						if(config.getBinding().isCompatibleTo(shadowDisjunct)) {
 							statesAfter.addAll(config.getStates());
@@ -476,7 +477,7 @@ public class AnalysisJob {
 			
 			boolean hasShadow = false;
 			for (Shadow shadow : allShadows) {
-				if(shadow.getAdviceBodyInvokeStmt().equals(unit)) {
+				if(shadow.getStmtToAttachTo().equals(unit)) {
 					hasShadow = true;
 					break;
 				}
@@ -502,7 +503,7 @@ public class AnalysisJob {
 			}
 			{
 				for (Shadow shadow : allShadows) {
-					if(shadow.getAdviceBodyInvokeStmt().equals(unit)) {
+					if(shadow.getStmtToAttachTo().equals(unit)) {
 						String symbol = symbolNameForShadow(shadow);
 						System.err.println(symbol+"-shadow at position "+shadow.getPosition());
 						System.err.println("states before:     "+unnecessaryShadowsAnalysis.statesBeforeTransition(shadow));
