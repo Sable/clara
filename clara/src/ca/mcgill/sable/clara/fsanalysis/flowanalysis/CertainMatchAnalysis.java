@@ -53,7 +53,9 @@ public class CertainMatchAnalysis {
 							continue nextShadow;
 						}					
 					}
-				}				
+				}	
+				if(!leadsToFinal) continue nextShadow;
+
 			}
 			
 			if(leadsToFinal) {
