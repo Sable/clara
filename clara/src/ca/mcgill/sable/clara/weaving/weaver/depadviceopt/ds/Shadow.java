@@ -67,7 +67,6 @@ import soot.util.IdentityHashSet;
 import soot.util.queue.QueueReader;
 import abc.main.Debug;
 import abc.main.Main;
-import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.Aspect;
@@ -76,16 +75,14 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.matching.MethodCallShadowMatch;
-import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.matching.StmtShadowMatch;
 import abc.weaving.residues.AndResidue;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ResidueBox;
 import abc.weaving.tagkit.InstructionShadowTag;
 import abc.weaving.tagkit.InstructionSourceTag;
-import ca.mcgill.sable.clara.HasDAInfo;
 import ca.mcgill.sable.clara.fsanalysis.util.SymbolNames;
-import ca.mcgill.sable.clara.weaving.aspectinfo.DAInfo;
 
 /**
  * Represents a joinpoint shadow in Jimple. Useful for shadow-based optimizations.
@@ -174,8 +171,10 @@ public class Shadow implements Comparable<Shadow> {
 	private final boolean isDelegateCallShadow;
 	
 	protected final Set<ShadowDisabledListener> listeners;
+
+	private final Stmt stmtToAttachTo;
 	
-	private Shadow(int shadowId, AdviceDecl adviceDecl, SootMethod container, Position pos, Map<String, Local> adviceFormalNameToSootLocal, ResidueBox outerResidueBox, Stmt stmt, boolean isDelegateCallShadow) {
+	private Shadow(int shadowId, AdviceDecl adviceDecl, SootMethod container, Position pos, Map<String, Local> adviceFormalNameToSootLocal, ResidueBox outerResidueBox, Stmt stmt, boolean isDelegateCallShadow, Stmt stmtToAttachTo) {
 		this.shadowId = shadowId;
 		this.adviceDecl = adviceDecl;
 		this.container = container;
@@ -184,6 +183,7 @@ public class Shadow implements Comparable<Shadow> {
 		this.outerResidueBox = outerResidueBox;
 		this.stmt = stmt;
 		this.isDelegateCallShadow = isDelegateCallShadow;
+		this.stmtToAttachTo = stmtToAttachTo;
 		this.adviceFormalNameToPointsToSet = new HashMap<String, PointsToSet>();
 		List<Formal> formals = adviceDecl.getFormals();
 		this.variableOrder = new ArrayList<String>(formals.size());
@@ -302,6 +302,7 @@ public class Shadow implements Comparable<Shadow> {
 				+ ((adviceDecl == null) ? 0 : adviceDecl.hashCode());
 		result = prime * result + shadowId;
 		result = prime * result + ((stmt == null) ? 0 : stmt.hashCode());
+		result = prime * result + ((stmtToAttachTo == null) ? 0 : stmtToAttachTo.hashCode());
 		return result;
 	}
 	
@@ -330,6 +331,11 @@ public class Shadow implements Comparable<Shadow> {
 			if (other.stmt != null)
 				return false;
 		} else if (!stmt.equals(other.stmt))
+			return false;
+		if (stmtToAttachTo == null) {
+			if (other.stmtToAttachTo != null)
+				return false;
+		} else if (!stmtToAttachTo.equals(other.stmtToAttachTo))
 			return false;
 		return true;
 	}
@@ -416,6 +422,7 @@ public class Shadow implements Comparable<Shadow> {
 			shadows.addAll(findShadowsFromAnnotations(m));
 
 			Map<Integer,Map<AbstractAdviceDecl,AdviceApplication>> shadowIdToAdviceToAdviceApplication = new HashMap<Integer,Map<AbstractAdviceDecl,AdviceApplication>>();
+			Map<Integer,Stmt> shadowIdToFirstShadowStmt = new HashMap<Integer, Stmt>();
 	        MethodAdviceList adviceList = gai.getAdviceList(m);
 
 	        //if there are any advice applications within that method
@@ -479,6 +486,16 @@ public class Shadow implements Comparable<Shadow> {
 												}
 											}
 											
+											Stmt stmtToAttachTo = s;
+											if(aa.shadowmatch instanceof StmtShadowMatch) {
+												Stmt firstStmt = shadowIdToFirstShadowStmt.get(shadowId);
+												if(firstStmt==null) {
+													firstStmt = s;
+													shadowIdToFirstShadowStmt.put(shadowId, firstStmt);
+												}
+												stmtToAttachTo = firstStmt;
+											}											
+
 											Position pos = extractPosition(aa.shadowmatch.getHost());
 											ResidueBox rbox = (ResidueBox) aa.getResidueBoxes().get(0); 
 											Shadow shadow = new Shadow(
@@ -489,7 +506,8 @@ public class Shadow implements Comparable<Shadow> {
 													adviceFormalToSootLocal,
 													rbox,
 													s,
-													isDelegateCallShadow
+													isDelegateCallShadow,
+													stmtToAttachTo
 											);
 											shadows.add(shadow);
 										}
@@ -521,46 +539,46 @@ public class Shadow implements Comparable<Shadow> {
 	
 
 	private static Set<Shadow> generateShadows(List<SymbolAndParams> resolved, SootMethod m) {
-		if(resolved.isEmpty()) return Collections.emptySet();
+		/*if(resolved.isEmpty())*/ throw new UnsupportedOperationException("implementation not updated");
 		
-		Set<Shadow> shadows = new HashSet<Shadow>();
-		HasDAInfo abcExtension = (HasDAInfo) Main.v().getAbcExtension();
-		DAInfo dai = abcExtension.getDependentAdviceInfo();
-		
-		for (SymbolAndParams symbolAndParam: resolved) {
-			String symbolName = symbolAndParam.symbol;
-			
-			AdviceDecl ad = dai.findAdviceDeclWithName(symbolName);
-			
-			if(symbolAndParam.params.size()!=ad.getFormals().size()) {
-				throw new IllegalArgumentException("Wrong number of parmaters: "+symbolAndParam.params.size()+" (expected "+ad.getFormals().size()+")");
-			}
-			
-			Map<String,Local> adviceFormalNameToSootLocal = new HashMap<String, Local>();			
-
-			int i=0;
-			for (Local paramLocal : symbolAndParam.params) {
-				//FIXME we should use the virtual variable name induced by the dependency here, not the advice-formal name
-				String formalName = ad.getFormals().get(i++).getName();
-				adviceFormalNameToSootLocal.put(formalName, paramLocal);
-			}
-			
-			ResidueBox residueBox = new ResidueBox();
-			residueBox.setResidue(AlwaysMatch.v());
-			
-			Shadow shadow = new Shadow(
-					-1,
-					ad,
-					m,
-					Position.COMPILER_GENERATED,
-					adviceFormalNameToSootLocal,
-					residueBox,
-					Restructure.findFirstRealStmt(m, m.getActiveBody().getUnits()),
-					false
-			);
-			shadows.add(shadow);
-		}	
-		return shadows;
+//		Set<Shadow> shadows = new HashSet<Shadow>();
+//		HasDAInfo abcExtension = (HasDAInfo) Main.v().getAbcExtension();
+//		DAInfo dai = abcExtension.getDependentAdviceInfo();
+//		
+//		for (SymbolAndParams symbolAndParam: resolved) {
+//			String symbolName = symbolAndParam.symbol;
+//			
+//			AdviceDecl ad = dai.findAdviceDeclWithName(symbolName);
+//			
+//			if(symbolAndParam.params.size()!=ad.getFormals().size()) {
+//				throw new IllegalArgumentException("Wrong number of parmaters: "+symbolAndParam.params.size()+" (expected "+ad.getFormals().size()+")");
+//			}
+//			
+//			Map<String,Local> adviceFormalNameToSootLocal = new HashMap<String, Local>();			
+//
+//			int i=0;
+//			for (Local paramLocal : symbolAndParam.params) {
+//				//FIXME we should use the virtual variable name induced by the dependency here, not the advice-formal name
+//				String formalName = ad.getFormals().get(i++).getName();
+//				adviceFormalNameToSootLocal.put(formalName, paramLocal);
+//			}
+//			
+//			ResidueBox residueBox = new ResidueBox();
+//			residueBox.setResidue(AlwaysMatch.v());
+//			
+//			Shadow shadow = new Shadow(
+//					-1,
+//					ad,
+//					m,
+//					Position.COMPILER_GENERATED,
+//					adviceFormalNameToSootLocal,
+//					residueBox,
+//					Restructure.findFirstRealStmt(m, m.getActiveBody().getUnits()),
+//					false
+//			);
+//			shadows.add(shadow);
+//		}	
+//		return shadows;
 	}
 	
 	protected static List<SymbolAndParams> resolveParameters(List<String> sequence, SootMethod m) {
@@ -831,5 +849,9 @@ public class Shadow implements Comparable<Shadow> {
 		}
 		
 		return myLine-sLine; 
+	}
+
+	public Stmt getStmtToAttachTo() {
+		return stmtToAttachTo;
 	}
 }

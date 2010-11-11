@@ -59,7 +59,7 @@ public class ShadowReportForUI {
 			
 			boolean hasShadow = false;
 			for (Shadow shadow : allShadows) {
-				if(shadow.getAdviceBodyInvokeStmt().equals(unit)) {
+				if(shadow.getStmtToAttachTo().equals(unit)) {
 					hasShadow = true;
 					break;
 				}
@@ -67,7 +67,7 @@ public class ShadowReportForUI {
 			if(!hasShadow) continue;
 			
 			for (Shadow shadow : allShadows) {
-				if(shadow.getAdviceBodyInvokeStmt().equals(unit)) {
+				if(shadow.getStmtToAttachTo().equals(unit)) {
 					
 					Set<Shadow> relatedShadowsInSameMethod = relatedSuccessorShadowsInSameMethod(shadow, job);
 					
@@ -126,7 +126,7 @@ public class ShadowReportForUI {
 		
 		Set<Shadow> result = new HashSet<Shadow>();
 		
-		Stmt initialStmt = s.getAdviceBodyInvokeStmt();
+		Stmt initialStmt = s.getStmtToAttachTo();
 		Set<Stmt> visited = new HashSet<Stmt>();
 		
 		Set<Stmt> worklist = new HashSet<Stmt>();
