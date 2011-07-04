@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!--
+
+This is the anc build file for abc.
+The most important tasks are:
+
+- default:
+  Build jars for abc, the abc runtime library
+  and the test drivers.
+- jars:           
+  Build the above plus abc-complete.jar, which holds
+  abc plus all its dependencies.
+- clean:
+  Deletes all compiled class files.
+- veryclean:
+  Deletes all the above plus all generated files.
+- run:
+  Builds abc-complete.jar and then runs it
+  with your extension enabled and the
+  command line arguments specified by
+  ext.arguments in ant.settings.
+
+-->
+
+<project default="clara" name="clara">
+
+	<target name="settings">
+		<property file="ant.settings" />
+		<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it." unless="polyglot.loc" />
+	</target>
+	
+	<target name="clara" depends="settings,abc-ja">
+		<ant antfile="${clara.dir}/build.xml" dir="${clara.dir}" inheritall="true"/>
+	</target>
+
+	<target name="abc-ja" depends="abc-ja-dep,abc" unless="abc-ja-up-to-date">
+		<ant antfile="${abc-ja.dir}/build.xml" dir="${abc-ja.dir}" inheritall="true"/>
+	</target>
+
+	<target name="abc-ja-dep" depends="settings">
+        <condition property="abc-ja-up-to-date">
+        	<and>
+    	        <available file="abc-ja.jar"/>
+        	</and>
+        </condition>
+	</target>
+
+	<target name="abc" depends="abc-dep,soot" unless="abc-up-to-date">
+		<ant antfile="${abc.dir}/build.xml" dir="${abc.dir}" inheritall="true"/>
+		<copy todir="."	file="${abc.dir}/lib/abc.jar"/>
+		<copy todir="." file="${abc.dir}/lib/abc-runtime.jar"/>
+		<copy todir="." file="${abc.dir}/lib/abc-testing.jar"/>
+	</target>
+
+	<target name="abc-dep" depends="settings">
+        <condition property="abc-up-to-date">
+        	<and>
+    	        <available file="abc.jar"/>
+    	        <available file="abc-runtime.jar"/>
+    	        <available file="abc-testing.jar"/>
+        	</and>
+        </condition>
+	</target>
+		
+	<target name="soot" depends="soot-dep" unless="soot-up-to-date">
+		<ant antfile="${soot.dir}/build.xml" target="fulljar" dir="${soot.dir}" inheritall="true"/>
+		<copy tofile="soot.jar" file="${soot.dir}/${release.loc}/soot-${soot.version}.jar"/>
+	</target>
+
+	<target name="soot-dep" depends="settings">
+        <condition property="soot-up-to-date">
+	        <available file="soot.jar"/>
+        </condition>
+	</target>
+</project>

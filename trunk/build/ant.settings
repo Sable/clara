@@ -1,0 +1,64 @@
+#Soot
+soot.dir=../soot
+soot.version=trunk
+jasmin.jar=../libs/jasminclasses-custom.jar
+polyglot.jar=../libs/polyglot.jar
+javacup.jar=../libs/java_cup.jar
+release.loc=lib
+
+#abc
+abc.dir=../abc
+
+#abc-ja
+abc-ja.dir=../abc-ja
+
+
+clara.dir=../clara
+
+
+
+
+
+
+## Location of Polyglot classes jar
+polyglot.loc=../libs/polyglot.jar
+
+## Location of Polyglot cup-classes (if not included in Polyglot jar)
+polyglot.cupclasses.loc=../libs/java_cup.jar
+
+paddle.loc=../libs/paddle-custom.jar
+
+## Location of JFlex classes jar
+jflex.loc=../libs/JFlex.jar
+
+## Location of Soot classes (can also be sootclasses jar)
+soot.loc=../soot/lib/sootclasses-trunk.jar
+
+## Location of Jasmin classes
+jasmin.loc=../libs/jasminclasses-custom.jar
+
+xact.loc=../libs/xact-complete.jar
+
+## Java Source version
+java.source=1.5
+
+## main abc distribution
+abc.dir=../abc
+
+## commandline arguments used to run your extension with when
+## using the "run" task
+ext.arguments=-version
+
+abc-ja.loc=../abc-ja
+abc-ja-ext.loc=../abc-ja-exts
+abc.loc=../abc
+jastadd=../JastAddJ
+jastadd.ext=../JastAddExtensions
+
+frontend=${jastadd}/Java1.4Frontend
+frontend1.5=${jastadd}/Java1.5Frontend
+flattening=${jastadd.ext}/JavaFlattening
+itds=${jastadd.ext}/IntertypeDeclarations
+backend=${jastadd.ext}/JimpleBackend
+javabackend=${jastadd.ext}/Java1.4Backend
+aspectj=../abc-ja
