@@ -60,5 +60,5 @@ frontend1.5=${jastadd}/Java1.5Frontend
 flattening=${jastadd.ext}/JavaFlattening
 itds=${jastadd.ext}/IntertypeDeclarations
 backend=${jastadd.ext}/JimpleBackend
-javabackend=${jastadd.ext}/Java1.4Backend
+javabackend=${jastadd}/Java1.4Backend
 aspectj=../abc-ja
