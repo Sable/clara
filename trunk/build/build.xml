@@ -33,21 +33,40 @@ The most important tasks are:
 		<ant antfile="${clara.dir}/build.xml" dir="${clara.dir}" inheritall="true"/>
 	</target>
 
+	<target name="abc-ja-exts" depends="abc-ja-exts-dep,abc" unless="abc-ja-exts-up-to-date">
+		<ant antfile="${abc-ja-ext.loc}/build.xml" dir="${abc-ja-ext.loc}" target="jars" inheritall="true"/>
+		<copy todir="."	file="${abc-ja-ext.loc}/lib/abc-ja-exts.jar"/>
+		<copy todir="."	file="${abc-ja-ext.loc}/lib/abc-ja-exts-complete.jar"/>
+	</target>
+
+	<target name="abc-ja-exts-dep" depends="settings">
+        <condition property="abc-ja-exts-up-to-date">
+        	<and>
+    	        <available file="abc-ja-exts.jar"/>
+    	        <available file="abc-ja-exts-complete.jar"/>
+        	</and>
+        </condition>
+	</target>
+
 	<target name="abc-ja" depends="abc-ja-dep,abc" unless="abc-ja-up-to-date">
-		<ant antfile="${abc-ja.dir}/build.xml" dir="${abc-ja.dir}" inheritall="true"/>
+		<ant antfile="${abc-ja.dir}/build.xml" dir="${abc-ja.dir}" target="jars" inheritall="true"/>
+		<copy todir="."	file="${abc-ja.dir}/lib/abc-ja.jar"/>
+		<copy todir="."	file="${abc-ja.dir}/lib/abc-ja-complete.jar"/>
 	</target>
 
 	<target name="abc-ja-dep" depends="settings">
         <condition property="abc-ja-up-to-date">
         	<and>
     	        <available file="abc-ja.jar"/>
+    	        <available file="abc-ja-complete.jar"/>
         	</and>
         </condition>
 	</target>
 
 	<target name="abc" depends="abc-dep,soot" unless="abc-up-to-date">
-		<ant antfile="${abc.dir}/build.xml" dir="${abc.dir}" inheritall="true"/>
+		<ant antfile="${abc.dir}/build.xml" dir="${abc.dir}" target="jars" inheritall="true"/>
 		<copy todir="."	file="${abc.dir}/lib/abc.jar"/>
+		<copy todir="."	file="${abc.dir}/lib/abc-complete.jar"/>
 		<copy todir="." file="${abc.dir}/lib/abc-runtime.jar"/>
 		<copy todir="." file="${abc.dir}/lib/abc-testing.jar"/>
 	</target>
@@ -56,6 +75,7 @@ The most important tasks are:
         <condition property="abc-up-to-date">
         	<and>
     	        <available file="abc.jar"/>
+    	        <available file="abc-complete.jar"/>
     	        <available file="abc-runtime.jar"/>
     	        <available file="abc-testing.jar"/>
         	</and>

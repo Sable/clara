@@ -5,6 +5,8 @@ jasmin.jar=../libs/jasminclasses-custom.jar
 polyglot.jar=../libs/polyglot.jar
 javacup.jar=../libs/java_cup.jar
 release.loc=lib
+jedd.runtime.jar=../libs/jedd-runtime.jar
+javabdd.jar=../libs/javabdd_0.6.jar
 
 #abc
 abc.dir=../abc
@@ -12,6 +14,8 @@ abc.dir=../abc
 #abc-ja
 abc-ja.dir=../abc-ja
 
+#abc-ja-exts
+refactoring.ext=../Refactoring
 
 clara.dir=../clara
 
@@ -60,5 +64,6 @@ frontend1.5=${jastadd}/Java1.5Frontend
 flattening=${jastadd.ext}/JavaFlattening
 itds=${jastadd.ext}/IntertypeDeclarations
 backend=${jastadd.ext}/JimpleBackend
+backend1.5=${jastadd.ext}/Jimple1.5Backend
 javabackend=${jastadd}/Java1.4Backend
 aspectj=../abc-ja
