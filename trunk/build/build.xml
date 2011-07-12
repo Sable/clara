@@ -29,8 +29,19 @@ The most important tasks are:
 		<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it." unless="polyglot.loc" />
 	</target>
 	
-	<target name="clara" depends="settings,abc-ja">
-		<ant antfile="${clara.dir}/build.xml" dir="${clara.dir}" inheritall="true"/>
+	<target name="clara" depends="clara-dep,abc-ja-exts" unless="clara-up-to-date">
+		<ant antfile="${clara.dir}/build.xml" dir="${clara.dir}" target="jars" inheritall="true"/>
+		<copy todir="."	file="${clara.dir}/lib/clara.jar"/>
+		<copy todir="."	file="${clara.dir}/lib/clara-complete.jar"/>
+	</target>
+
+	<target name="clara-dep" depends="settings">
+        <condition property="clara-up-to-date">
+        	<and>
+    	        <available file="clara.jar"/>
+    	        <available file="clara-complete.jar"/>
+        	</and>
+        </condition>
 	</target>
 
 	<target name="abc-ja-exts" depends="abc-ja-exts-dep,abc" unless="abc-ja-exts-up-to-date">
