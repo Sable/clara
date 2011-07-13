@@ -93,14 +93,26 @@ The most important tasks are:
         </condition>
 	</target>
 		
-	<target name="soot" depends="soot-dep" unless="soot-up-to-date">
+	<target name="soot" depends="soot-dep,jasmin" unless="soot-up-to-date">
 		<ant antfile="${soot.dir}/build.xml" target="fulljar" dir="${soot.dir}" inheritall="true"/>
 		<copy tofile="soot.jar" file="${soot.dir}/${release.loc}/soot-${soot.version}.jar"/>
+		<copy tofile="sootclasses.jar" file="${soot.dir}/${release.loc}/sootclasses-${soot.version}.jar"/>
 	</target>
 
 	<target name="soot-dep" depends="settings">
         <condition property="soot-up-to-date">
 	        <available file="soot.jar"/>
+        </condition>
+	</target>
+
+	<target name="jasmin" depends="jasmin-dep" unless="jasmin-up-to-date">
+		<ant antfile="${jasmin.dir}/build.xml" target="jasmin-jar" dir="${jasmin.dir}" inheritall="true"/>
+		<copy tofile="jasminclasses.jar" file="${jasmin.dir}/${release.loc}/jasminclasses-${jasmin.version}.jar"/>
+	</target>
+
+	<target name="jasmin-dep" depends="settings">
+        <condition property="jasmin-up-to-date">
+	        <available file="jasminclasses.jar"/>
         </condition>
 	</target>
 </project>
