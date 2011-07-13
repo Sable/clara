@@ -72,3 +72,5 @@ backend=${jastadd.ext}/JimpleBackend
 backend1.5=${jastadd.ext}/Jimple1.5Backend
 javabackend=${jastadd}/Java1.4Backend
 aspectj=../abc-ja
+
+jenkins.rel.dir=release
