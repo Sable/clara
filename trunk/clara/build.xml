@@ -147,8 +147,6 @@ The most important tasks are:
 				<pathelement location="${polyglot.cupclasses.loc}" />
 				<pathelement location="${soot.loc}" />
 				<pathelement location="${jasmin.loc}" />
-				<pathelement location="${bat2xml.loc}" />
-				<pathelement location="${jdom.loc}" />
 			</classpath>
 		</javac>
 	</target>
