@@ -121,9 +121,10 @@ The most important tasks are:
 			<arg value="./run_tests_and_send_mail.sh"/>
 			<arg value="eric.bodden@gmail.com"/>
 			<arg value="abctests"/>
-			<arg value="-n"/>
-			<arg value="7"/>
 			<env key="CLASSPATH" value="../../../clara/lib/clara-complete.jar:../../../abc/lib/abc-testing.jar"/>
+		</exec>
+                <exec dir="${abc.testing.dir}/ajc-harness/tests" executable="/bin/sh">
+			<arg value="./update_current_pass_fail_lists.sh"/>
 		</exec>
 	</target>
 </project>
