@@ -24,6 +24,7 @@ refactoring.ext=../Refactoring
 
 clara.dir=../clara
 
+abc.testing.dir=../abc-testing
 
 
 
