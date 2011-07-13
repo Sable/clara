@@ -95,8 +95,8 @@ The most important tasks are:
 		
 	<target name="soot" depends="soot-dep,jasmin" unless="soot-up-to-date">
 		<ant antfile="${soot.dir}/build.xml" target="fulljar" dir="${soot.dir}" inheritall="true"/>
-		<copy tofile="soot.jar" file="${soot.dir}/${release.loc}/soot-${soot.version}.jar"/>
-		<copy tofile="sootclasses.jar" file="${soot.dir}/${release.loc}/sootclasses-${soot.version}.jar"/>
+		<copy tofile="${jenkins.rel.dir}/soot.jar" file="${soot.dir}/${release.loc}/soot-${soot.version}.jar"/>
+		<copy tofile="${jenkins.rel.dir}/sootclasses.jar" file="${soot.dir}/${release.loc}/sootclasses-${soot.version}.jar"/>
 	</target>
 
 	<target name="soot-dep" depends="settings">
@@ -107,7 +107,7 @@ The most important tasks are:
 
 	<target name="jasmin" depends="jasmin-dep" unless="jasmin-up-to-date">
 		<ant antfile="${jasmin.dir}/build.xml" target="jasmin-jar" dir="${jasmin.dir}" inheritall="true"/>
-		<copy tofile="jasminclasses.jar" file="${jasmin.dir}/${release.loc}/jasminclasses-${jasmin.version}.jar"/>
+		<copy tofile="${jenkins.rel.dir}/jasminclasses.jar" file="${jasmin.dir}/${release.loc}/jasminclasses-${jasmin.version}.jar"/>
 	</target>
 
 	<target name="jasmin-dep" depends="settings">
