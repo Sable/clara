@@ -1,10 +1,15 @@
+#jasmin
+jasmin.version=trunk
+jasmin.dir=../jasmin
+javacup.jar=../libs/java_cup.jar
+java_cup.jar=${javacup.jar}
+release.loc=lib
+
 #Soot
 soot.dir=../soot
 soot.version=trunk
-jasmin.jar=../libs/jasminclasses-custom.jar
+jasmin.jar=${jasmin.dir}/${release.loc}/jasminclasses-${jasmin.version}.jar
 polyglot.jar=../libs/polyglot.jar
-javacup.jar=../libs/java_cup.jar
-release.loc=lib
 jedd.runtime.jar=../libs/jedd-runtime.jar
 javabdd.jar=../libs/javabdd_0.6.jar
 
