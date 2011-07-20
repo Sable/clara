@@ -120,14 +120,8 @@ The most important tasks are:
 	<target name="complete-jar" depends="clara-jar,libdir,runtime">
 		<jar destfile="lib/clara-complete.jar" manifest="MANIFEST.MF">
 			<fileset dir="classes" />
-			<fileset dir="${abc.dir}/classes" />
-			<zipfileset src="${abc-ja.loc}/lib/abc-ja.jar"/>
-			<zipfileset src="${abc-ja-ext.loc}/lib/abc-ja-exts.jar"/>
+			<zipfileset src="${abc-ja-ext.loc}/lib/abc-ja-exts-complete.jar"/>
 			<fileset dir="runtime-classes" />
-			<zipfileset src="${polyglot.loc}" />
-			<zipfileset src="${polyglot.cupclasses.loc}" />
-			<zipfileset src="${soot.loc}" />
-			<zipfileset src="${jasmin.loc}" />
 		</jar>
 	</target>
 	
