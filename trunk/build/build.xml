@@ -119,7 +119,7 @@ The most important tasks are:
 	<target name="test-and-email" depends="settings">
 		<exec dir="${abc.testing.dir}/ajc-harness/tests" executable="/bin/sh">
 			<arg value="./run_tests_and_send_mail.sh"/>
-			<arg value="eric.bodden@gmail.com"/>
+			<arg value="abc-testlogs@sable.mcgill.ca"/>
 			<arg value="abctests"/>
 			<env key="CLASSPATH" value="../../../clara/lib/clara-complete.jar:../../../abc/lib/abc-testing.jar"/>
 		</exec>
