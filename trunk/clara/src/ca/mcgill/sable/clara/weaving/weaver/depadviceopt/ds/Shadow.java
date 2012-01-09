@@ -419,7 +419,7 @@ public class Shadow implements Comparable<Shadow> {
 		Set<Shadow> shadows = new HashSet<Shadow>();
 		for (SootMethod m : methods) {
 
-			shadows.addAll(findShadowsFromAnnotations(m));
+//			shadows.addAll(findShadowsFromAnnotations(m));
 
 			Map<Integer,Map<AbstractAdviceDecl,AdviceApplication>> shadowIdToAdviceToAdviceApplication = new HashMap<Integer,Map<AbstractAdviceDecl,AdviceApplication>>();
 			Map<Integer,Stmt> shadowIdToFirstShadowStmt = new HashMap<Integer, Stmt>();
@@ -530,17 +530,17 @@ public class Shadow implements Comparable<Shadow> {
 		return shadows;
 	}
 
-	protected static Set<Shadow> findShadowsFromAnnotations(SootMethod m) {
-		List<String> sequence = findPreconditionSequenceFromAnnotation(m);
-		List<SymbolAndParams> resolved = resolveParameters(sequence, m);
-		return generateShadows(resolved,m);
-	}
-	
-	
-
-	private static Set<Shadow> generateShadows(List<SymbolAndParams> resolved, SootMethod m) {
-		/*if(resolved.isEmpty())*/ throw new UnsupportedOperationException("implementation not updated");
-		
+//	protected static Set<Shadow> findShadowsFromAnnotations(SootMethod m) {
+//		List<String> sequence = findPreconditionSequenceFromAnnotation(m);
+//		List<SymbolAndParams> resolved = resolveParameters(sequence, m);
+//		return generateShadows(resolved,m);
+//	}
+//	
+//	
+//
+//	private static Set<Shadow> generateShadows(List<SymbolAndParams> resolved, SootMethod m) {
+//		if(resolved.isEmpty()) return Collections.emptySet();
+//
 //		Set<Shadow> shadows = new HashSet<Shadow>();
 //		HasDAInfo abcExtension = (HasDAInfo) Main.v().getAbcExtension();
 //		DAInfo dai = abcExtension.getDependentAdviceInfo();
@@ -579,7 +579,7 @@ public class Shadow implements Comparable<Shadow> {
 //			shadows.add(shadow);
 //		}	
 //		return shadows;
-	}
+//	}
 	
 	protected static List<SymbolAndParams> resolveParameters(List<String> sequence, SootMethod m) {
 		if(sequence.isEmpty()) return Collections.emptyList(); 
