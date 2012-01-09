@@ -173,11 +173,15 @@
     <ajc-test num="1304" dir="tracematches/wp-opt"
         title="Tracematches (wp-tmopt): flow-sensitive intraprocedural stage, Test1">
         <compile files="IntraFlowSens1.java,AB.java,AbstractTest.java" options="-ext,ca.mcgill.sable.clara.tm,-static-analyses,quick-osa-nsa,-warn-about-individual-shadows,-cp,../../abc/lib/abc-runtime.jar:../../abc/lib/abc-testing.jar,+soot,-pp,-no-bodies-for-excluded,-soot">
+	    	<message kind="warning" line="20"/>
+	    	<message kind="warning" line="26"/>
 	    	<message kind="warning" line="41"/>
 	    	<message kind="warning" line="43"/>
 	    	<message kind="warning" line="48"/>
 	    	<message kind="warning" line="52"/>
+	    	<message kind="warning" line="54"/>
 	    	<message kind="warning" line="59"/>
+	    	<message kind="warning" line="61"/>
 	    	<message kind="warning" line="66"/>
 	    	<message kind="warning" line="68"/>
 	    	<message kind="warning" line="73"/>
