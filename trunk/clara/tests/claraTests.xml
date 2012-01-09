@@ -367,6 +367,7 @@
 
     <ajc-test num="1500" dir="da/annotation"
         title="Precon annotation">
+        <abckeywords><skip/></abckeywords>
         <compile files="Main.java,Precon.java" options="-ext,ca.mcgill.sable.clara,-static-analyses,quick-osa-nsa,+soot,-pp,+soot,-no-bodies-for-excluded,-soot">
 	    	<message kind="warning" line="27"/>
 		</compile>
