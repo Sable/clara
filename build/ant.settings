@@ -1,3 +1,6 @@
+test.email=abc-testlogs@sable.mcgill.ca
+
+
 #jasmin
 jasmin.version=trunk
 jasmin.dir=../jasmin
