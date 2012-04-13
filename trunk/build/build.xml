@@ -1,26 +1,4 @@
 <?xml version="1.0"?>
-<!--
-
-This is the anc build file for abc.
-The most important tasks are:
-
-- default:
-  Build jars for abc, the abc runtime library
-  and the test drivers.
-- jars:           
-  Build the above plus abc-complete.jar, which holds
-  abc plus all its dependencies.
-- clean:
-  Deletes all compiled class files.
-- veryclean:
-  Deletes all the above plus all generated files.
-- run:
-  Builds abc-complete.jar and then runs it
-  with your extension enabled and the
-  command line arguments specified by
-  ext.arguments in ant.settings.
-
--->
 
 <project default="clara" name="clara">
 
@@ -119,7 +97,7 @@ The most important tasks are:
 	<target name="test-and-email" depends="settings">
 		<exec dir="${abc.testing.dir}/ajc-harness/tests" executable="/bin/sh">
 			<arg value="./run_tests_and_send_mail.sh"/>
-			<arg value="abc-testlogs@sable.mcgill.ca"/>
+			<arg value="${test.email}"/>
 			<arg value="abctests"/>
 			<env key="CLASSPATH" value="../../../clara/lib/clara-complete.jar:../../../abc/lib/abc-testing.jar"/>
 		</exec>
