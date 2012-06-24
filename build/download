@@ -9,9 +9,7 @@ function get_from_git() {
    mv Sable-${pkg}* ${pkg}
 }
 
-cd ..
-
-svn export http://clara.googlecode.com/svn/trunk-with-deps
+svn export --trust-server-cert --non-interactive http://clara.googlecode.com/svn/trunk-with-deps
 mv trunk-with-deps/* .
 rm -fr trunk-with-deps
 
