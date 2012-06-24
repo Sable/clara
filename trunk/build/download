@@ -1,0 +1,17 @@
+#!/bin/bash
+
+function get_from_git() {
+   pkg="$1"
+   echo downloading ${pkg}
+   wget "https://github.com/Sable/$1/tarball/master"
+   tar xzf master
+   rm master
+   mv Sable-${pkg}* trunk-with-deps/${pkg}
+}
+
+cd ..
+
+svn export http://clara.googlecode.com/svn/trunk-with-deps
+
+get_from_git soot
+get_from_git jasmin
