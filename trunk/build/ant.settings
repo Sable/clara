@@ -3,70 +3,70 @@ test.email=abc-testlogs@sable.mcgill.ca
 
 #jasmin
 jasmin.version=trunk
-jasmin.dir=./jasmin
-javacup.jar=./libs/java_cup.jar
+jasmin.dir=../jasmin
+javacup.jar=../libs/java_cup.jar
 java_cup.jar=${javacup.jar}
 release.loc=lib
 
 #Soot
-soot.dir=./soot
+soot.dir=../soot
 soot.version=trunk
 jasmin.jar=${jasmin.dir}/${release.loc}/jasminclasses-${jasmin.version}.jar
-polyglot.jar=./libs/polyglot.jar
-jedd.runtime.jar=./libs/jedd-runtime.jar
-javabdd.jar=./libs/javabdd_0.6.jar
+polyglot.jar=../libs/polyglot.jar
+jedd.runtime.jar=../libs/jedd-runtime.jar
+javabdd.jar=../libs/javabdd_0.6.jar
 
 #abc
-abc.dir=./abc
+abc.dir=../abc
 
 #abc-ja
-abc-ja.dir=./abc-ja
+abc-ja.dir=../abc-ja
 
 #abc-ja-exts
-refactoring.ext=./Refactoring
+refactoring.ext=../Refactoring
 
-clara.dir=./clara
+clara.dir=../clara
 
-abc.testing.dir=./abc-testing
+abc.testing.dir=../abc-testing
 
 
 
 
 
 ## Location of Polyglot classes jar
-polyglot.loc=./libs/polyglot.jar
+polyglot.loc=../libs/polyglot.jar
 
 ## Location of Polyglot cup-classes (if not included in Polyglot jar)
-polyglot.cupclasses.loc=./libs/java_cup.jar
+polyglot.cupclasses.loc=../libs/java_cup.jar
 
-paddle.loc=./libs/paddle-custom.jar
+paddle.loc=../libs/paddle-custom.jar
 
 ## Location of JFlex classes jar
-jflex.loc=./libs/JFlex.jar
+jflex.loc=../libs/JFlex.jar
 
 ## Location of Soot classes (can also be sootclasses jar)
-soot.loc=./soot/lib/sootclasses-trunk.jar
+soot.loc=../soot/lib/sootclasses-trunk.jar
 
 ## Location of Jasmin classes
-jasmin.loc=./libs/jasminclasses-custom.jar
+jasmin.loc=../libs/jasminclasses-custom.jar
 
-xact.loc=./libs/xact-complete.jar
+xact.loc=../libs/xact-complete.jar
 
 ## Java Source version
 java.source=1.5
 
 ## main abc distribution
-abc.dir=./abc
+abc.dir=../abc
 
 ## commandline arguments used to run your extension with when
 ## using the "run" task
 ext.arguments=-version
 
-abc-ja.loc=./abc-ja
-abc-ja-ext.loc=./abc-ja-exts
-abc.loc=./abc
-jastadd=./JastAddJ
-jastadd.ext=./JastAddExtensions
+abc-ja.loc=../abc-ja
+abc-ja-ext.loc=../abc-ja-exts
+abc.loc=../abc
+jastadd=../JastAddJ
+jastadd.ext=../JastAddExtensions
 
 frontend=${jastadd}/Java1.4Frontend
 frontend1.5=${jastadd}/Java1.5Frontend
@@ -75,6 +75,6 @@ itds=${jastadd.ext}/IntertypeDeclarations
 backend=${jastadd.ext}/JimpleBackend
 backend1.5=${jastadd.ext}/Jimple1.5Backend
 javabackend=${jastadd}/Java1.4Backend
-aspectj=./abc-ja
+aspectj=../abc-ja
 
 jenkins.rel.dir=release
