@@ -6,12 +6,14 @@ function get_from_git() {
    wget "https://github.com/Sable/$1/tarball/master"
    tar xzf master
    rm master
-   mv Sable-${pkg}* trunk-with-deps/${pkg}
+   mv Sable-${pkg}* ${pkg}
 }
 
 cd ..
 
 svn export http://clara.googlecode.com/svn/trunk-with-deps
+mv trunk-with-deps/* .
+rm -fr trunk-with-deps
 
 get_from_git soot
 get_from_git jasmin
