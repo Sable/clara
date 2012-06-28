@@ -11,7 +11,7 @@ function get_from_git() {
 
 cd ..
 
-svn export --trust-server-cert --non-interactive http://clara.googlecode.com/svn/trunk-with-deps
+svn co --trust-server-cert --non-interactive http://clara.googlecode.com/svn/trunk-with-deps
 mv trunk-with-deps/* .
 rm -fr trunk-with-deps
 
