@@ -12,7 +12,8 @@ release.loc=lib
 soot.dir=../soot
 soot.version=trunk
 jasmin.jar=${jasmin.dir}/${release.loc}/jasminclasses-${jasmin.version}.jar
-polyglot.jar=../libs/polyglot.jar
+polyglot.jar=libs/polyglot.jar
+xmlprinter.jar=libs/AXMLPrinter2.jar
 jedd.runtime.jar=../libs/jedd-runtime.jar
 javabdd.jar=../libs/javabdd_0.6.jar
 
