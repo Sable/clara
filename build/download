@@ -17,3 +17,4 @@ rm -fr trunk-with-deps
 
 get_from_git soot
 get_from_git jasmin
+get_from_git heros
