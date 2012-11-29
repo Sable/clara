@@ -71,7 +71,7 @@
         </condition>
 	</target>
 		
-	<target name="soot" depends="soot-dep,jasmin" unless="soot-up-to-date">
+	<target name="soot" depends="soot-dep,jasmin,heros" unless="soot-up-to-date">
 		<ant antfile="${soot.dir}/build.xml" target="fulljar" dir="${soot.dir}" inheritall="true"/>
 		<copy tofile="${jenkins.rel.dir}/soot.jar" file="${soot.dir}/${release.loc}/soot-${soot.version}.jar"/>
 		<copy tofile="${jenkins.rel.dir}/sootclasses.jar" file="${soot.dir}/${release.loc}/sootclasses-${soot.version}.jar"/>
@@ -80,6 +80,17 @@
 	<target name="soot-dep" depends="settings">
         <condition property="soot-up-to-date">
 	        <available file="soot.jar"/>
+        </condition>
+	</target>
+	
+	<target name="heros" depends="heros-dep" unless="heros-up-to-date">
+		<ant antfile="${heros.dir}/build.xml" target="jar" dir="${heros.dir}" inheritall="true"/>
+		<copy tofile="${jenkins.rel.dir}/heros.jar" file="${heros.dir}/heros-${heros.version}.jar"/>
+	</target>
+
+	<target name="heros-dep" depends="settings">
+        <condition property="heros-up-to-date">
+	        <available file="heros.jar"/>
         </condition>
 	</target>
 

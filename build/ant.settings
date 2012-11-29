@@ -1,5 +1,10 @@
 test.email=abc-testlogs@sable.mcgill.ca
 
+#heros
+heros.version=trunk
+guava.jar=guava-13.0.jar
+heros.jar=../heros/heros-trunk.jar
+heros.dir=../heros
 
 #jasmin
 jasmin.version=trunk
