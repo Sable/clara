@@ -2,10 +2,11 @@
 
 function get_from_git() {
    pkg="$1"
-   echo downloading ${pkg}
-   wget "https://github.com/Sable/$1/tarball/master"
-   tar xzf master
-   rm master
+   branch="$2"
+   echo downloading ${pkg}/${branch}
+   wget --no-check-certificate "https://github.com/Sable/${pkg}/tarball/${branch}"
+   tar xzf ${branch}
+   rm ${branch}
    mv Sable-${pkg}* ${pkg}
 }
 
@@ -15,6 +16,6 @@ svn co --trust-server-cert --non-interactive http://clara.googlecode.com/svn/tru
 mv trunk-with-deps/* .
 rm -fr trunk-with-deps
 
-get_from_git soot
-get_from_git jasmin
-get_from_git heros
+get_from_git soot develop
+get_from_git jasmin develop
+get_from_git heros develop
