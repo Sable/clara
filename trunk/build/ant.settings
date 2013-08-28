@@ -2,7 +2,7 @@ test.email=abc-testlogs@sable.mcgill.ca
 
 #heros
 heros.version=trunk
-guava.jar=guava-13.0.jar
+guava.jar=guava-14.0.1.jar
 heros.jar=../heros/heros-trunk.jar
 heros.dir=../heros
 
