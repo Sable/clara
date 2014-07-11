@@ -25,7 +25,7 @@ dexlib-utils.jar=libs/util-2.0.3-dev.jar
 xmlprinter.jar=libs/AXMLPrinter2.jar
 jedd.runtime.jar=../libs/jedd-runtime.jar
 javabdd.jar=../libs/javabdd_0.6.jar
-asm.jar=libs/asm-debug-all-4.0.jar
+asm.jar=libs/asm-debug-all-5.0.3.jar
 
 #abc
 abc.dir=../abc
