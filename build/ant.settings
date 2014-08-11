@@ -15,6 +15,8 @@ javacup.jar=../libs/java_cup.jar
 java_cup.jar=${javacup.jar}
 release.loc=lib
 ant.build.javac.encoding=iso-8859-1
+ant.build.javac.source=1.5
+ant.build.javac.target=1.5
 
 #Soot
 soot.dir=../soot
