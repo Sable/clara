@@ -660,8 +660,8 @@ public class Shadow implements Comparable<Shadow> {
 		if(annotations.isEmpty()) return Collections.emptyList();
 		
 		for (AnnotationTag annotationTag : annotations) {
-			for(int i=0; i<annotationTag.getNumElems(); i++) {
-				AnnotationArrayElem annotation = (AnnotationArrayElem) annotationTag.getElemAt(i);
+			for(AnnotationElem elem: annotationTag.getElems()) {
+				AnnotationArrayElem annotation = (AnnotationArrayElem) elem;
 				ArrayList<AnnotationElem> elems = annotation.getValues();
 				for (AnnotationElem annotationElem : elems) {
 					AnnotationStringElem stringElem = (AnnotationStringElem) annotationElem;
