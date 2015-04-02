@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<project default="clara" name="clara">
+
+	<target name="settings">
+		<property file="ssebuild.settings" />
+		<fail message="Please copy ant.settings.template to ant.settings, and set the variables in it." unless="polyglot.loc" />		
+	</target>
+	
+	<target name="clara" depends="clara-dep" unless="clara-up-to-date">
+		<ant antfile="${clara.dir}/build.xml" dir="${clara.dir}" target="jars" inheritall="true"/>
+		<copy todir="${jenkins.rel.dir}"	file="${clara.dir}/lib/clara.jar"/>
+		<copy todir="${jenkins.rel.dir}"	file="${clara.dir}/lib/clara-complete.jar"/>
+	</target>
+
+	<target name="clara-dep" depends="settings">
+        <condition property="clara-up-to-date">
+        	<and>
+    	        <available file="clara.jar"/>
+    	        <available file="clara-complete.jar"/>
+        	</and>
+        </condition>
+	</target>
+	
+	<target name="test-and-email" depends="settings">
+		<exec dir="${abc.testing.dir}/ajc-harness/tests" executable="/bin/sh">
+			<arg value="./run_tests_and_send_mail.sh"/>
+			<arg value="${test.email}"/>
+			<arg value="abctests"/>
+			<env key="CLASSPATH" value="../../../clara/lib/clara-complete.jar:../../../abc/lib/abc-testing.jar"/>
+		</exec>
+                <exec dir="${abc.testing.dir}/ajc-harness/tests" executable="/bin/sh">
+			<arg value="./update_current_pass_fail_lists.sh"/>
+		</exec>
+	</target>
+</project>
